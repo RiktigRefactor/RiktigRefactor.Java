@@ -2,6 +2,7 @@ package io.github.riktigrefactor.java.analysis;
 
 import com.sun.source.tree.CompilationUnitTree;
 import com.sun.source.tree.ExpressionTree;
+import com.sun.source.tree.MemberSelectTree;
 import com.sun.source.tree.Tree;
 import com.sun.source.util.TreePath;
 import com.sun.source.util.TreePathScanner;
@@ -21,23 +22,23 @@ import javax.lang.model.type.TypeMirror;
  */
 public final class Bindings {
     /** Where a tree sits in the original text, and what it bound to. */
-    public record Binding(String file, long start, String binding) {}
+    public record Binding(String file, long start, long end, boolean viaCopy, String binding) {}
 
     private final Compilation compilation;
-    private final Map<String, OffsetMap> offsetMaps;
+    private final Map<String, List<TextEdit>> editsByFile;
 
-    private Bindings(Compilation compilation, Map<String, OffsetMap> offsetMaps) {
+    private Bindings(Compilation compilation, Map<String, List<TextEdit>> editsByFile) {
         this.compilation = compilation;
-        this.offsetMaps = offsetMaps;
+        this.editsByFile = editsByFile;
     }
 
     /** Bindings of a compilation of text that {@code editsByFile} produced from the original. */
     public static Bindings of(Compilation compilation, Map<String, List<TextEdit>> editsByFile) {
-        Map<String, OffsetMap> offsetMaps = new LinkedHashMap<>();
-        for (String file : compilation.unitsByFile.keySet()) {
-            offsetMaps.put(file, new OffsetMap(editsByFile.getOrDefault(file, List.of())));
-        }
-        return new Bindings(compilation, offsetMaps);
+        return new Bindings(compilation, editsByFile);
+    }
+
+    private EditMap mapOf(String file) {
+        return EditMap.of(file, editsByFile);
     }
 
     /**
@@ -49,7 +50,7 @@ public final class Bindings {
         for (var entry : compilation.unitsByFile.entrySet()) {
             String file = entry.getKey();
             CompilationUnitTree unit = entry.getValue();
-            OffsetMap offsets = offsetMaps.get(file);
+            EditMap edits = mapOf(file);
             new TreePathScanner<Void, Void>() {
                 @Override
                 public Void scan(Tree tree, Void unused) {
@@ -63,15 +64,17 @@ public final class Bindings {
                     Tree tree = path.getLeaf();
                     long start = compilation.start(unit, tree);
                     long end = compilation.end(unit, tree);
-                    if (start < 0 || end < 0) {
+                    if (start < 0 || end < 0 || edits.spansInsertions(start, end)) {
                         return;
                     }
-                    if (offsets.spansInsertions(start, end)) {
-                        return;
+                    Tree.Kind kind = tree.getKind();
+                    EditMap.Span span = edits.map(start, end);
+                    if (tree instanceof MemberSelectTree select && qualifierIsInserted(select)) {
+                        long nameStart = end - select.getIdentifier().length();
+                        span = edits.map(nameStart, end);
+                        kind = Tree.Kind.IDENTIFIER;
                     }
-                    long originalStart = offsets.mapStart(start);
-                    long originalEnd = offsets.mapEnd(end);
-                    if (originalStart == OffsetMap.UNMAPPED || originalEnd == OffsetMap.UNMAPPED) {
+                    if (span == null || span.start() == span.end()) {
                         return;
                     }
                     StringBuilder binding = new StringBuilder();
@@ -87,11 +90,19 @@ public final class Bindings {
                     if (binding.isEmpty()) {
                         return;
                     }
-                    String key = file + "|" + tree.getKind() + "|" + originalStart + "|" + originalEnd;
+                    String key = span.file() + "|" + kind + "|" + span.start() + "|" + span.end();
                     result.merge(
                             key,
-                            new Binding(file, originalStart, binding.toString()),
-                            (a, b) -> new Binding(a.file(), a.start(), a.binding() + " ; " + b.binding()));
+                            new Binding(span.file(), span.start(), span.end(), span.viaCopy(), binding.toString()),
+                            (a, b) -> new Binding(
+                                    a.file(), a.start(), a.end(), a.viaCopy(), a.binding() + " ; " + b.binding()));
+                }
+
+                /** {@code x} rewritten as {@code q.x}, where q is new text: compared as the original identifier. */
+                private boolean qualifierIsInserted(MemberSelectTree select) {
+                    long start = compilation.start(unit, select.getExpression());
+                    long end = compilation.end(unit, select.getExpression());
+                    return start >= 0 && end >= 0 && edits.map(start, end) == null;
                 }
             }.scan(new TreePath(unit), null);
         }
@@ -109,10 +120,12 @@ public final class Bindings {
             CompilationUnitTree unit = declaration.getCompilationUnit();
             String file = compilation.fileOfUnit.get(unit);
             Tree leaf = declaration.getLeaf();
-            OffsetMap offsets = offsetMaps.get(file);
-            return "source " + file + " " + element.getKind() + " " + leaf.getKind() + " "
-                    + offsets.mapStart(compilation.start(unit, leaf)) + "-"
-                    + offsets.mapEnd(compilation.end(unit, leaf));
+            EditMap.Span span = mapOf(file).map(compilation.start(unit, leaf), compilation.end(unit, leaf));
+            if (span == null) {
+                return "inserted " + element.getKind() + " " + element.getSimpleName();
+            }
+            return "source " + span.file() + " " + element.getKind() + " " + leaf.getKind() + " " + span.start() + "-"
+                    + span.end();
         }
         return switch (element) {
             case PackageElement pkg -> "package " + pkg.getQualifiedName();
