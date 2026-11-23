@@ -47,7 +47,8 @@ final class Hierarchy {
                         continue;
                     }
                     for (ExecutableElement external : SourceTypes.methodsNamed(supertype, target.getSimpleName())) {
-                        if (compilation.elements.overrides(member, external, type)) {
+                        if (compilation.elements.overrides(member, external, type)
+                                || compilation.elements.overrides(external, member, type)) {
                             return new Result(group, supertype.getQualifiedName() + "." + external);
                         }
                     }

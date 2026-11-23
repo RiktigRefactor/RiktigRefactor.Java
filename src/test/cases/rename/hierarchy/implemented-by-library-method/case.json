@@ -1,0 +1,11 @@
+{
+  "options": {
+    "newName": "count"
+  },
+  "refuse": "overrides-external",
+  "naiveShouldFail": true,
+  "spec": [
+    "Java §8.4.8.4 Inheriting Methods with Override-Equivalent Signatures"
+  ],
+  "notes": "ArrayList.size implements Sized.size in Names, and ArrayList is outside the workspace."
+}
