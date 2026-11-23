@@ -120,7 +120,18 @@ public final class Bindings {
             CompilationUnitTree unit = declaration.getCompilationUnit();
             String file = compilation.fileOfUnit.get(unit);
             Tree leaf = declaration.getLeaf();
-            EditMap.Span span = mapOf(file).map(compilation.start(unit, leaf), compilation.end(unit, leaf));
+            long start = compilation.start(unit, leaf);
+            long end = compilation.end(unit, leaf);
+            String enclosingName = element.getEnclosingElement() == null
+                    ? null
+                    : element.getEnclosingElement().getSimpleName().toString();
+            Token name =
+                    new NameLocator(compilation).nameToken(unit, leaf, NameLocator.spelledName(leaf, enclosingName));
+            if (name != null) {
+                start = name.start();
+                end = name.end();
+            }
+            EditMap.Span span = mapOf(file).map(start, end);
             if (span == null) {
                 return "inserted " + element.getKind() + " " + element.getSimpleName();
             }

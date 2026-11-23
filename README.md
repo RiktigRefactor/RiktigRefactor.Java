@@ -12,7 +12,7 @@ The specification defines the correctness model, the refactorings, the JSON prot
 
 ## What it can do
 
-The tool has these refactorings: Rename, Extract IIFE, Make method static, and Move static member.
+The tool has these refactorings: Rename, Extract IIFE, Make method static, Move static member, and Move static method to instance method.
 Both work on a workspace: for now, a directory whose `.java` files are compiled together against the JDK alone.
 The specification's workspace for Java is a Maven or Gradle build, whose dependencies would be on the class path; reading those builds is not implemented yet.
 A workspace that does not compile is refused, because the meaning of its names can't be known.
@@ -94,6 +94,14 @@ Single-static-import declarations are updated; other unqualified uses are qualif
 It refuses when using the member would initialize classes at a different time (a field initializer, or the source's or target's static initialization, that may have observable effects), when a reference goes through an expression with effects (`make().rate()`), when something would become inaccessible, for `main`, `synchronized` and `native` methods, fields declared together with others, and when the move would change which member any reference binds to.
 Interfaces and enums as targets are not supported yet.
 
+### Move static method to instance method
+
+The inverse of Make method static: a static method becomes an instance method of the class of the parameter named by `--receiver`, which becomes `this`, and every call `Pricing.total(order, 3)` becomes `order.total(3)`.
+The method moves to the end of that class; names that resolved through the old class's scope are qualified, and it is `final` when the class has subclasses.
+
+It refuses when a receiver argument may be null (the instance call would throw before the body), when an argument written before the receiver may depend on it, when the class, a supertype or a subtype already has a method with that name (or the name is one of `Object`'s), when the receiver is varargs, assigned, or used in a nested class, for method references whose receiver isn't the first parameter, and for static imports of the method.
+Generic methods and generic target classes are not supported yet.
+
 Each refusal has a code, listed in [refusal-codes.md](refusal-codes.md).
 
 See [limitations](https://github.com/RiktigRefactor/riktigrefactor.spec/blob/main/limitations.md) for what is out of scope, such as reflection, serialization by name, and updating comments and strings.
@@ -132,6 +140,12 @@ Move a static member:
 
 ```shell
 riktig-java move-static-member --workspace . --file src/main/java/shop/Order.java --at 12:17 --target shop.Pricing
+```
+
+Move a static method to an instance method of its `order` parameter's class:
+
+```shell
+riktig-java move-to-instance-method --workspace . --file src/main/java/shop/Pricing.java --at 12:17 --receiver order
 ```
 
 The exit code is 0 on success, 1 when the refactoring is refused, and 2 on an error such as an unknown file.

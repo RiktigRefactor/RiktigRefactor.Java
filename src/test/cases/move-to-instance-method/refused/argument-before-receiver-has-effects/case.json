@@ -1,0 +1,10 @@
+{
+  "options": {
+    "receiver": "order"
+  },
+  "refuse": "evaluation-order",
+  "naiveShouldFail": true,
+  "spec": [
+    "Java §15.7.4 Argument Lists are Evaluated Left-to-Right"
+  ]
+}

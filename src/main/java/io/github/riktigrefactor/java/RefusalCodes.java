@@ -46,6 +46,13 @@ public final class RefusalCodes {
     public static final String STATIC_INITIALIZATION = "static-initialization";
     public static final String RECEIVER_HAS_EFFECTS = "receiver-has-effects";
     public static final String INACCESSIBLE = "inaccessible";
+    public static final String TYPE_PARAMETERS = "type-parameters";
+    public static final String INVALID_RECEIVER = "invalid-receiver";
+    public static final String NAME_IN_HIERARCHY = "name-in-hierarchy";
+    public static final String RECEIVER_IN_NESTED_CLASS = "receiver-in-nested-class";
+    public static final String METHOD_REFERENCE_SHAPE = "method-reference-shape";
+    public static final String EVALUATION_ORDER = "evaluation-order";
+    public static final String RECURSIVE_CALL_RECEIVER = "recursive-call-receiver";
     public static final String INTERNAL_VERIFICATION_FAILED = "internal-verification-failed";
 
     private RefusalCodes() {}

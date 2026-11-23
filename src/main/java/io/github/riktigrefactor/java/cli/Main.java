@@ -8,6 +8,7 @@ import io.github.riktigrefactor.java.analysis.Token;
 import io.github.riktigrefactor.java.extractiife.ExtractIife;
 import io.github.riktigrefactor.java.makestatic.MakeMethodStatic;
 import io.github.riktigrefactor.java.movestatic.MoveStaticMember;
+import io.github.riktigrefactor.java.movetoinstance.MoveToInstanceMethod;
 import io.github.riktigrefactor.java.protocol.Json;
 import io.github.riktigrefactor.java.protocol.ProtocolResult;
 import io.github.riktigrefactor.java.protocol.ProtocolResult.CommitMessage;
@@ -34,6 +35,7 @@ public final class Main {
               riktig-java rename --workspace DIR --file FILE --at LINE:COLUMN --new-name NAME [--apply] [--json] [--commit-message]
               riktig-java extract-iife --workspace DIR --file FILE --range LINE:COLUMN-LINE:COLUMN [--apply] [--json] [--commit-message]
               riktig-java move-static-member --workspace DIR --file FILE --at LINE:COLUMN --target QUALIFIED.NAME [--apply] [--json] [--commit-message]
+              riktig-java move-to-instance-method --workspace DIR --file FILE --at LINE:COLUMN --receiver PARAMETER [--apply] [--json] [--commit-message]
               riktig-java make-method-static --workspace DIR --file FILE --at LINE:COLUMN [--receiver-name NAME] [--apply] [--json] [--commit-message]
 
             The workspace is a directory (or a build file in it) whose .java files are compiled together.
@@ -133,6 +135,18 @@ public final class Main {
                         "Behavior-preserving move of a static member.",
                         "Refactor: move-static-member java " + file + ":" + at.line() + ":" + at.column() + " -> "
                                 + target);
+            }
+            case "move-to-instance-method" -> {
+                int cursor = offset(text, required(options, "--at"));
+                String receiver = required(options, "--receiver");
+                outcome = MoveToInstanceMethod.run(workspace.sources(), file, cursor, receiver);
+                String name = nameAt(text, cursor);
+                SourceText.Position at = SourceText.position(text, cursor);
+                commit = new CommitMessage(
+                        ". r Move " + name + " to an instance method on " + receiver,
+                        "Behavior-preserving move of a static method to an instance method of its parameter's class.",
+                        "Refactor: move-to-instance-method java " + file + ":" + at.line() + ":" + at.column() + " "
+                                + receiver);
             }
             default -> throw new UsageException("Unknown command: " + command + "\n" + USAGE);
         }

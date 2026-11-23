@@ -69,8 +69,16 @@ public final class Verification {
         }
         List<long[]> rewritten = new ArrayList<>();
         List<String> rewrittenFiles = new ArrayList<>();
+        List<long[]> rewrittenInside = new ArrayList<>();
+        List<String> rewrittenInsideFiles = new ArrayList<>();
         for (TextEdit edit : edits) {
-            addRewritten(edit, rewritten, rewrittenFiles);
+            if (edit.end() > edit.start()) {
+                rewritten.add(new long[] {edit.start(), edit.end()});
+                rewrittenFiles.add(edit.file());
+            }
+            for (TextEdit inner : edit.innerEdits()) {
+                addRewritten(inner, rewrittenInside, rewrittenInsideFiles);
+            }
         }
         Map<String, Bindings.Binding> before = Bindings.of(original, Map.of()).record(compareTypes);
         Map<String, Bindings.Binding> after = Bindings.of(edited, editsByFile).record(compareTypes);
@@ -81,6 +89,9 @@ public final class Verification {
                 continue;
             }
             Bindings.Binding now = after.get(entry.getKey());
+            if (mode == Mode.STRUCTURAL && isRewritten(old, rewrittenInside, rewrittenInsideFiles)) {
+                continue;
+            }
             if (mode == Mode.STRUCTURAL && isRewritten(old, rewritten, rewrittenFiles)) {
                 if (now == null || !now.viaCopy()) {
                     continue;

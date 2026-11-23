@@ -47,7 +47,7 @@ public final class EditMap {
                 break;
             }
             if (start == newStart && end > newEnd) {
-                originalStart = edit.start();
+                originalStart = edit.newText().isEmpty() ? edit.end() : edit.start();
                 break;
             }
             if (start < newEnd || (start == newStart && end <= newEnd)) {

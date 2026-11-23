@@ -1,0 +1,10 @@
+{
+  "options": {
+    "receiver": "order"
+  },
+  "refuse": "receiver-may-be-null",
+  "naiveShouldFail": true,
+  "spec": [
+    "Java §15.12.4.4 Locate Method to Invoke"
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "options": {
+    "receiver": "order"
+  },
+  "spec": [
+    "Java §8.4.3.2 static Methods",
+    "Java §15.12.4 Run-Time Evaluation of Method Invocation"
+  ],
+  "notes": "The recursive call passes the receiver parameter itself, so it becomes this.total(qty - 1)."
+}

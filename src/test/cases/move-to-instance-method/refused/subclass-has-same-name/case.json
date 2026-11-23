@@ -1,0 +1,11 @@
+{
+  "options": {
+    "receiver": "order"
+  },
+  "refuse": "name-in-hierarchy",
+  "naiveShouldFail": true,
+  "spec": [
+    "Java §8.4.8.1 Overriding (by Instance Methods)"
+  ],
+  "notes": "SpecialOrder.total would override the new Order.total, so special receivers would run it."
+}
