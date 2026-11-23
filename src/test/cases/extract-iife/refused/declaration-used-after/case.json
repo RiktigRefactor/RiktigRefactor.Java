@@ -1,0 +1,8 @@
+{
+  "options": {},
+  "refuse": "declaration-escapes",
+  "naiveShouldFail": true,
+  "spec": [
+    "JLS \u00a76.3 Scope of a Declaration"
+  ]
+}

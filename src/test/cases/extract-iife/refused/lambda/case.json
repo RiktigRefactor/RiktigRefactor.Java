@@ -1,0 +1,7 @@
+{
+  "options": {},
+  "refuse": "target-typed-expression",
+  "spec": [
+    "JLS \u00a715.27.3 Type of a Lambda Expression"
+  ]
+}

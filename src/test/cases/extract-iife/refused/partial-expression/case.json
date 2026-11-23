@@ -1,0 +1,7 @@
+{
+  "options": {},
+  "refuse": "invalid-selection",
+  "spec": [
+    "JLS \u00a715.7 Evaluation Order"
+  ]
+}

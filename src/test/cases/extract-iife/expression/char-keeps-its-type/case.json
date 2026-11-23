@@ -1,0 +1,9 @@
+{
+  "options": {},
+  "spec": [
+    "JLS \u00a75.1.7 Boxing Conversion",
+    "JLS \u00a75.1.8 Unboxing Conversion",
+    "JLS \u00a715.18.1 String Concatenation Operator +"
+  ],
+  "notes": "There is no CharSupplier, so the char is boxed by a Supplier<Character> and cast back, keeping the type char."
+}

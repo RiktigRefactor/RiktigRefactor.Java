@@ -1,0 +1,9 @@
+{
+  "options": {},
+  "refuse": "type-not-nameable",
+  "naiveShouldFail": true,
+  "spec": [
+    "JLS \u00a715.9.5 Anonymous Class Declarations",
+    "JLS \u00a714.4.1 Local Variable Declarators and Types"
+  ]
+}

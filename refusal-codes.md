@@ -23,4 +23,14 @@ A new code is listed in the release notes.
 | `would-introduce-errors` | The result would not compile, for a reason other than a conflicting declaration. |
 | `binding-would-change` | After the change, a name would refer to a different declaration than before, such as when a reference is captured by a local, a lambda parameter, an inherited member, or a different overload. |
 | `overriding-would-change` | After the rename, a method would override (or stop overriding) a method it did not before, which would change which method runs. |
+| `invalid-selection` | Extract IIFE: the selection is not exactly one expression or whole statements of one statement list, or does not denote a value (such as a type name, or the method name of a call). |
+| `non-local-control-flow` | Extract IIFE: `return`, or a `break`, `continue`, or `yield` whose target is outside the selection, would cross the boundary of the lambda. |
+| `type-not-nameable` | Extract IIFE: the expression's type can't be written as a type argument, such as an anonymous class, intersection, or captured wildcard type. |
+| `target-typed-expression` | Extract IIFE: the expression's meaning depends on its target type (a lambda, a method reference, `null`, or an array initializer). |
+| `constant-expression` | Extract IIFE: the expression is (or may be) a compile-time constant; a method call is not, which can change the type of a conditional, narrowing in assignments, `switch` labels, and string interning. |
+| `selection-is-variable` | Extract IIFE: the expression is assigned to or incremented, so it denotes a variable; the lambda would return only its value. |
+| `writes-outer-variable` | Extract IIFE: the selection assigns a local variable or parameter declared outside it, which a lambda can't do. |
+| `not-effectively-final` | Extract IIFE: the selection reads a local declared outside it that is not (provably) effectively final, so a lambda can't capture it. |
+| `declaration-escapes` | Extract IIFE: a variable or class the selection declares is used after it, where it would no longer be in scope. |
+| `checked-exception` | Extract IIFE: the selection can throw a checked exception, which the lambda's functional interface does not allow. |
 | `internal-verification-failed` | The tool's own check of its result failed. This is a bug in the tool; please report it. |

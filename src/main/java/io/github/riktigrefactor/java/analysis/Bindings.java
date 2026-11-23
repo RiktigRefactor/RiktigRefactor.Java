@@ -66,6 +66,9 @@ public final class Bindings {
                     if (start < 0 || end < 0) {
                         return;
                     }
+                    if (offsets.spansInsertions(start, end)) {
+                        return;
+                    }
                     long originalStart = offsets.mapStart(start);
                     long originalEnd = offsets.mapEnd(end);
                     if (originalStart == OffsetMap.UNMAPPED || originalEnd == OffsetMap.UNMAPPED) {

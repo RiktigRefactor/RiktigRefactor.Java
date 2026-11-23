@@ -10,6 +10,7 @@ import static org.junit.jupiter.api.Assertions.fail;
 import io.github.riktigrefactor.java.Outcome;
 import io.github.riktigrefactor.java.Warning;
 import io.github.riktigrefactor.java.analysis.TextEdit;
+import io.github.riktigrefactor.java.extractiife.ExtractIife;
 import io.github.riktigrefactor.java.rename.Rename;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -44,6 +45,9 @@ class CaseTests {
                         ? Rename.runNaive(testCase.input(), testCase.markedFile(), testCase.selectionStart(), newName)
                         : Rename.run(testCase.input(), testCase.markedFile(), testCase.selectionStart(), newName);
             }
+            case "extract-iife" -> naive
+                    ? ExtractIife.runNaive(testCase.input(), testCase.markedFile(), testCase.selectionStart(), testCase.selectionEnd())
+                    : ExtractIife.run(testCase.input(), testCase.markedFile(), testCase.selectionStart(), testCase.selectionEnd());
             default -> throw new IllegalStateException("Unknown refactoring " + testCase.refactoring());
         };
     }

@@ -1,0 +1,9 @@
+{
+  "options": {},
+  "refuse": "not-effectively-final",
+  "naiveShouldFail": true,
+  "spec": [
+    "JLS \u00a74.12.4 final Variables",
+    "JLS \u00a715.27.2 Lambda Body"
+  ]
+}
