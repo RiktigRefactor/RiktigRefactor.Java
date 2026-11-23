@@ -75,7 +75,8 @@ public final class Bindings {
                         return;
                     }
                     StringBuilder binding = new StringBuilder();
-                    Element element = Occurrences.isStaticImportMember(path) ? null : compilation.trees.getElement(path);
+                    Element element =
+                            Occurrences.isStaticImportMember(path) ? null : compilation.trees.getElement(path);
                     if (element != null) {
                         binding.append(elementKey(element));
                     }
@@ -87,7 +88,9 @@ public final class Bindings {
                         return;
                     }
                     String key = file + "|" + tree.getKind() + "|" + originalStart + "|" + originalEnd;
-                    result.merge(key, new Binding(file, originalStart, binding.toString()),
+                    result.merge(
+                            key,
+                            new Binding(file, originalStart, binding.toString()),
                             (a, b) -> new Binding(a.file(), a.start(), a.binding() + " ; " + b.binding()));
                 }
             }.scan(new TreePath(unit), null);
@@ -108,18 +111,22 @@ public final class Bindings {
             Tree leaf = declaration.getLeaf();
             OffsetMap offsets = offsetMaps.get(file);
             return "source " + file + " " + element.getKind() + " " + leaf.getKind() + " "
-                    + offsets.mapStart(compilation.start(unit, leaf)) + "-" + offsets.mapEnd(compilation.end(unit, leaf));
+                    + offsets.mapStart(compilation.start(unit, leaf)) + "-"
+                    + offsets.mapEnd(compilation.end(unit, leaf));
         }
         return switch (element) {
             case PackageElement pkg -> "package " + pkg.getQualifiedName();
             case TypeElement type when !hasSourceEnclosure(type) -> "type " + type.getQualifiedName();
-            case ExecutableElement method -> element.getKind() + " " + elementKey(method.getEnclosingElement()) + "#"
-                    + method.getSimpleName() + method.getParameters().stream()
-                            .map(p -> compilation.types.erasure(p.asType()).toString())
-                            .collect(Collectors.joining(",", "(", ")"));
-            default -> element.getKind() + " " + (element.getEnclosingElement() == null
-                    ? ""
-                    : elementKey(element.getEnclosingElement())) + "#" + element.getSimpleName();
+            case ExecutableElement method ->
+                element.getKind() + " " + elementKey(method.getEnclosingElement()) + "#"
+                        + method.getSimpleName()
+                        + method.getParameters().stream()
+                                .map(p -> compilation.types.erasure(p.asType()).toString())
+                                .collect(Collectors.joining(",", "(", ")"));
+            default ->
+                element.getKind() + " "
+                        + (element.getEnclosingElement() == null ? "" : elementKey(element.getEnclosingElement())) + "#"
+                        + element.getSimpleName();
         };
     }
 

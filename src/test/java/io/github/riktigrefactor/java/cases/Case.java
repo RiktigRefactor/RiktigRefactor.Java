@@ -32,7 +32,8 @@ record Case(
 
     static Case load(Path casesRoot, Path directory) {
         try {
-            JsonNode json = new ObjectMapper().readTree(directory.resolve("case.json").toFile());
+            JsonNode json =
+                    new ObjectMapper().readTree(directory.resolve("case.json").toFile());
             String refactoring = casesRoot.relativize(directory).getName(0).toString();
             List<String> warnings = new ArrayList<>();
             json.path("warnings").forEach(w -> warnings.add(w.asText()));
@@ -63,8 +64,17 @@ record Case(
             if (markedFile == null) {
                 throw new IllegalStateException("No selection marker in " + directory);
             }
-            return new Case(directory, refactoring, json.path("options"), json.path("refuse").asText(null),
-                    json.path("naiveShouldFail").asBoolean(false), warnings, input, markedFile, start, end);
+            return new Case(
+                    directory,
+                    refactoring,
+                    json.path("options"),
+                    json.path("refuse").asText(null),
+                    json.path("naiveShouldFail").asBoolean(false),
+                    warnings,
+                    input,
+                    markedFile,
+                    start,
+                    end);
         } catch (IOException e) {
             throw new UncheckedIOException(e);
         }
@@ -77,7 +87,9 @@ record Case(
         }
         try (Stream<Path> paths = Files.walk(root)) {
             for (Path path : paths.filter(p -> p.toString().endsWith(".java")).toList()) {
-                files.put(root.relativize(path).toString().replace('\\', '/'), Files.readString(path, StandardCharsets.UTF_8));
+                files.put(
+                        root.relativize(path).toString().replace('\\', '/'),
+                        Files.readString(path, StandardCharsets.UTF_8));
             }
         }
         return files;

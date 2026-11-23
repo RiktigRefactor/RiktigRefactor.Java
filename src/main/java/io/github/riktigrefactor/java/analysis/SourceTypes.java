@@ -55,7 +55,8 @@ public final class SourceTypes {
 
     private void addSupertypes(TypeMirror type, Set<TypeElement> result) {
         for (TypeMirror supertype : compilation.types.directSupertypes(type)) {
-            if (supertype instanceof DeclaredType declared && declared.asElement() instanceof TypeElement element
+            if (supertype instanceof DeclaredType declared
+                    && declared.asElement() instanceof TypeElement element
                     && result.add(element)) {
                 addSupertypes(supertype, result);
             }

@@ -38,10 +38,17 @@ import javax.lang.model.type.TypeMirror;
 
 /** Renames a symbol and every reference to it, then proves that every name still binds as before. */
 public final class Rename {
-    private static final Set<String> RESTRICTED_IDENTIFIERS = Set.of("var", "yield", "record", "sealed", "permits", "_");
+    private static final Set<String> RESTRICTED_IDENTIFIERS =
+            Set.of("var", "yield", "record", "sealed", "permits", "_");
     private static final Set<String> NAMES_LOOKED_UP_BY_THE_RUNTIME = Set.of(
-            "serialVersionUID", "serialPersistentFields", "writeObject", "readObject", "readObjectNoData",
-            "writeReplace", "readResolve", "finalize");
+            "serialVersionUID",
+            "serialPersistentFields",
+            "writeObject",
+            "readObject",
+            "readObjectNoData",
+            "writeReplace",
+            "readResolve",
+            "finalize");
 
     private final Compilation compilation;
     private final String newName;
@@ -80,7 +87,12 @@ public final class Rename {
             }
         }
         if (atCursor == null) {
-            return Outcome.refuse(RefusalCodes.NO_SYMBOL, "There is no renameable symbol at the cursor.", file, cursor, cursor,
+            return Outcome.refuse(
+                    RefusalCodes.NO_SYMBOL,
+                    "There is no renameable symbol at the cursor.",
+                    file,
+                    cursor,
+                    cursor,
                     "Put the cursor on the name of a declaration or a reference to one.");
         }
         Element target = atCursor.element();
@@ -103,10 +115,13 @@ public final class Rename {
             if (target instanceof ExecutableElement method) {
                 var hierarchy = new Hierarchy(compilation).of(method);
                 if (hierarchy.externalOverridden() != null) {
-                    return Outcome.refuse(RefusalCodes.OVERRIDES_EXTERNAL,
+                    return Outcome.refuse(
+                            RefusalCodes.OVERRIDES_EXTERNAL,
                             "'" + oldName + "' overrides or is overridden alongside " + hierarchy.externalOverridden()
                                     + ", which is not declared in the workspace.",
-                            file, at.start(), at.end());
+                            file,
+                            at.start(),
+                            at.end());
                 }
                 targets = new LinkedHashSet<>(hierarchy.methods());
             } else {
@@ -123,7 +138,8 @@ public final class Rename {
                             && targets.contains(element.getEnclosingElement()));
             if (isTarget) {
                 Token token = occurrence.token();
-                editsByPosition.put(occurrence.file() + ":" + token.start(),
+                editsByPosition.put(
+                        occurrence.file() + ":" + token.start(),
                         new TextEdit(occurrence.file(), token.start(), token.end(), newName));
             }
         }
@@ -156,61 +172,101 @@ public final class Rename {
                 changed = new TreeSet<>(overridingBefore);
                 changed.removeAll(overridingAfter);
             }
-            return Outcome.refuse(RefusalCodes.OVERRIDING_WOULD_CHANGE,
-                    "The rename would change which methods override which: " + changed.iterator().next(),
-                    file, at.start(), at.end());
+            return Outcome.refuse(
+                    RefusalCodes.OVERRIDING_WOULD_CHANGE,
+                    "The rename would change which methods override which: "
+                            + changed.iterator().next(),
+                    file,
+                    at.start(),
+                    at.end());
         }
         return new Outcome.Success(edits, warnings);
     }
 
     private Outcome checkRenameable(Element target, String oldName, String file, Token at) {
-        if (!SourceVersion.isIdentifier(newName) || SourceVersion.isKeyword(newName)
+        if (!SourceVersion.isIdentifier(newName)
+                || SourceVersion.isKeyword(newName)
                 || RESTRICTED_IDENTIFIERS.contains(newName)) {
-            return Outcome.refuse(RefusalCodes.INVALID_IDENTIFIER,
+            return Outcome.refuse(
+                    RefusalCodes.INVALID_IDENTIFIER,
                     "'" + newName + "' is not a valid Java identifier, or is a keyword or restricted identifier.",
-                    file, at.start(), at.end());
+                    file,
+                    at.start(),
+                    at.end());
         }
         TreePath declaration = compilation.trees.getPath(target);
-        if (declaration == null || !compilation.fileOfUnit.containsKey(declaration.getCompilationUnit())
-                || target.getKind() == ElementKind.PACKAGE || target.getKind() == ElementKind.MODULE
+        if (declaration == null
+                || !compilation.fileOfUnit.containsKey(declaration.getCompilationUnit())
+                || target.getKind() == ElementKind.PACKAGE
+                || target.getKind() == ElementKind.MODULE
                 || compilation.positions.getEndPosition(declaration.getCompilationUnit(), declaration.getLeaf()) < 0) {
-            return Outcome.refuse(RefusalCodes.NOT_RENAMEABLE,
-                    "'" + oldName + "' is not declared in the workspace source (or is implicitly declared), so it can't be renamed.",
-                    file, at.start(), at.end());
+            return Outcome.refuse(
+                    RefusalCodes.NOT_RENAMEABLE,
+                    "'" + oldName
+                            + "' is not declared in the workspace source (or is implicitly declared), so it can't be renamed.",
+                    file,
+                    at.start(),
+                    at.end());
         }
         Element owner = target.getEnclosingElement();
         if (target.getKind() == ElementKind.METHOD && owner.getKind() == ElementKind.ANNOTATION_TYPE) {
-            return Outcome.refuse(RefusalCodes.ANNOTATION_MEMBER,
-                    "'" + oldName + "' is an annotation element; its name is read by reflection and by the `value` shorthand.",
-                    file, at.start(), at.end());
+            return Outcome.refuse(
+                    RefusalCodes.ANNOTATION_MEMBER,
+                    "'" + oldName
+                            + "' is an annotation element; its name is read by reflection and by the `value` shorthand.",
+                    file,
+                    at.start(),
+                    at.end());
         }
         if (isRecordComponentOrItsParts(target)) {
-            return Outcome.refuse(RefusalCodes.RECORD_COMPONENT,
-                    "'" + oldName + "' is a record component (or its field, accessor or canonical constructor parameter); renaming it is not supported yet.",
-                    file, at.start(), at.end());
+            return Outcome.refuse(
+                    RefusalCodes.RECORD_COMPONENT,
+                    "'" + oldName
+                            + "' is a record component (or its field, accessor or canonical constructor parameter); renaming it is not supported yet.",
+                    file,
+                    at.start(),
+                    at.end());
         }
-        if (target instanceof ExecutableElement method && (isMainMethod(method) || method.getModifiers().contains(Modifier.NATIVE))) {
-            return Outcome.refuse(RefusalCodes.ENTRY_POINT,
+        if (target instanceof ExecutableElement method
+                && (isMainMethod(method) || method.getModifiers().contains(Modifier.NATIVE))) {
+            return Outcome.refuse(
+                    RefusalCodes.ENTRY_POINT,
                     "'" + oldName + "' is found by name from outside Java (a main method or a native method).",
-                    file, at.start(), at.end());
+                    file,
+                    at.start(),
+                    at.end());
         }
         if (target instanceof ExecutableElement method && isMainSignature(method, newName)) {
-            return Outcome.refuse(RefusalCodes.ENTRY_POINT,
-                    "Renaming to 'main' would add a program entry point.", file, at.start(), at.end());
+            return Outcome.refuse(
+                    RefusalCodes.ENTRY_POINT,
+                    "Renaming to 'main' would add a program entry point.",
+                    file,
+                    at.start(),
+                    at.end());
         }
         boolean isMember = target.getKind() == ElementKind.FIELD || target.getKind() == ElementKind.METHOD;
-        if (isMember && (NAMES_LOOKED_UP_BY_THE_RUNTIME.contains(oldName) || NAMES_LOOKED_UP_BY_THE_RUNTIME.contains(newName))) {
-            return Outcome.refuse(RefusalCodes.NAME_USED_BY_RUNTIME,
+        if (isMember
+                && (NAMES_LOOKED_UP_BY_THE_RUNTIME.contains(oldName)
+                        || NAMES_LOOKED_UP_BY_THE_RUNTIME.contains(newName))) {
+            return Outcome.refuse(
+                    RefusalCodes.NAME_USED_BY_RUNTIME,
                     "The Java runtime looks up members named '"
                             + (NAMES_LOOKED_UP_BY_THE_RUNTIME.contains(oldName) ? oldName : newName)
                             + "' by name (serialization or finalization).",
-                    file, at.start(), at.end());
+                    file,
+                    at.start(),
+                    at.end());
         }
-        if (target instanceof TypeElement type && owner.getKind() == ElementKind.PACKAGE
+        if (target instanceof TypeElement type
+                && owner.getKind() == ElementKind.PACKAGE
                 && type.getModifiers().contains(Modifier.PUBLIC)) {
-            return Outcome.refuse(RefusalCodes.WOULD_RENAME_FILE,
-                    "'" + oldName + "' is a public top-level type, so its file would have to be renamed too, which is not supported yet.",
-                    file, at.start(), at.end());
+            return Outcome.refuse(
+                    RefusalCodes.WOULD_RENAME_FILE,
+                    "'" + oldName
+                            + "' is a public top-level type, so its file would have to be renamed too, which is not supported yet.",
+                    file,
+                    at.start(),
+                    at.end());
         }
         return null;
     }
@@ -246,7 +302,8 @@ public final class Rename {
             return true;
         }
         TypeMirror type = method.getParameters().getFirst().asType();
-        return type instanceof ArrayType array && array.getComponentType().getKind() == TypeKind.DECLARED
+        return type instanceof ArrayType array
+                && array.getComponentType().getKind() == TypeKind.DECLARED
                 && array.getComponentType().toString().equals("java.lang.String");
     }
 
@@ -254,22 +311,26 @@ public final class Rename {
      * {@code import static p.T.name;} imports every static member of T called name. Its name is edited only when
      * every such member is renamed; otherwise the import would have to be split, which is not supported yet.
      */
-    private Outcome editStaticImports(String oldName, Set<Element> targets, Map<String, TextEdit> edits, boolean naive) {
+    private Outcome editStaticImports(
+            String oldName, Set<Element> targets, Map<String, TextEdit> edits, boolean naive) {
         NameLocator locator = new NameLocator(compilation);
         for (var entry : compilation.unitsByFile.entrySet()) {
             CompilationUnitTree unit = entry.getValue();
             for (ImportTree importTree : unit.getImports()) {
-                if (!importTree.isStatic() || !(importTree.getQualifiedIdentifier() instanceof MemberSelectTree select)
+                if (!importTree.isStatic()
+                        || !(importTree.getQualifiedIdentifier() instanceof MemberSelectTree select)
                         || !select.getIdentifier().contentEquals(oldName)) {
                     continue;
                 }
-                TreePath qualifier = new TreePath(new TreePath(new TreePath(new TreePath(unit), importTree), select), select.getExpression());
+                TreePath qualifier = new TreePath(
+                        new TreePath(new TreePath(new TreePath(unit), importTree), select), select.getExpression());
                 if (!(compilation.trees.getElement(qualifier) instanceof TypeElement type)) {
                     continue;
                 }
                 List<Element> imported = new ArrayList<>();
                 for (Element member : compilation.elements.getAllMembers(type)) {
-                    if (member.getModifiers().contains(Modifier.STATIC) && member.getSimpleName().contentEquals(oldName)) {
+                    if (member.getModifiers().contains(Modifier.STATIC)
+                            && member.getSimpleName().contentEquals(oldName)) {
                         imported.add(member);
                     }
                 }
@@ -278,13 +339,19 @@ public final class Rename {
                 }
                 Token token = locator.nameToken(unit, select, oldName);
                 if (!naive && (!targets.containsAll(imported) || token == null)) {
-                    return Outcome.refuse(RefusalCodes.STATIC_IMPORT_SHARED,
-                            "This static import also imports other members named '" + oldName + "', which are not renamed.",
-                            entry.getKey(), (int) compilation.start(unit, importTree), (int) compilation.end(unit, importTree),
+                    return Outcome.refuse(
+                            RefusalCodes.STATIC_IMPORT_SHARED,
+                            "This static import also imports other members named '" + oldName
+                                    + "', which are not renamed.",
+                            entry.getKey(),
+                            (int) compilation.start(unit, importTree),
+                            (int) compilation.end(unit, importTree),
                             "Split the import into one per member, or import the type and qualify the uses.");
                 }
                 if (token != null) {
-                    edits.put(entry.getKey() + ":" + token.start(), new TextEdit(entry.getKey(), token.start(), token.end(), newName));
+                    edits.put(
+                            entry.getKey() + ":" + token.start(),
+                            new TextEdit(entry.getKey(), token.start(), token.end(), newName));
                 }
             }
         }
@@ -300,9 +367,13 @@ public final class Rename {
                 public Void visitLiteral(LiteralTree literal, Void unused) {
                     if (oldName.equals(literal.getValue())) {
                         int start = (int) compilation.start(unit, literal);
-                        warnings.add(new Warning("string-matches-name",
-                                "This string equals the old name '" + oldName + "' and is not updated; check whether it is used to look the symbol up by name.",
-                                entry.getKey(), start, (int) compilation.end(unit, literal)));
+                        warnings.add(new Warning(
+                                "string-matches-name",
+                                "This string equals the old name '" + oldName
+                                        + "' and is not updated; check whether it is used to look the symbol up by name.",
+                                entry.getKey(),
+                                start,
+                                (int) compilation.end(unit, literal)));
                     }
                     return null;
                 }

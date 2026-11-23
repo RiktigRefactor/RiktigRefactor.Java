@@ -72,7 +72,8 @@ public final class Main {
         }
     }
 
-    private static int run(String command, Map<String, String> options, PrintStream out) throws IOException, UsageException {
+    private static int run(String command, Map<String, String> options, PrintStream out)
+            throws IOException, UsageException {
         Workspace workspace = Workspace.load(Path.of(required(options, "--workspace")));
         String file = workspace.relativeFile(required(options, "--file"));
         String text = workspace.sources().get(file);
@@ -91,7 +92,8 @@ public final class Main {
                 commit = new CommitMessage(
                         ". r Rename " + oldName + " to " + newName,
                         "Behavior-preserving rename.",
-                        "Refactor: rename java " + file + ":" + at.line() + ":" + at.column() + " " + oldName + " -> " + newName);
+                        "Refactor: rename java " + file + ":" + at.line() + ":" + at.column() + " " + oldName + " -> "
+                                + newName);
             }
             case "extract-iife" -> {
                 String[] range = required(options, "--range").split("-", 2);
@@ -114,7 +116,8 @@ public final class Main {
         }
         if (outcome instanceof Outcome.Refused refused) {
             if (!options.containsKey("--json")) {
-                out.println("Refused (" + refused.reason().code() + "): " + refused.reason().message());
+                out.println("Refused (" + refused.reason().code() + "): "
+                        + refused.reason().message());
                 if (refused.reason().suggestion() != null) {
                     out.println("Suggestion: " + refused.reason().suggestion());
                 }
@@ -130,9 +133,11 @@ public final class Main {
             out.println(commit.subject() + "\n\n" + commit.body() + "\n\n" + commit.trailer());
         }
         if (options.containsKey("--apply")) {
-            for (var entry : TextEdit.apply(workspace.sources(), success.edits()).entrySet()) {
+            for (var entry :
+                    TextEdit.apply(workspace.sources(), success.edits()).entrySet()) {
                 if (!entry.getValue().equals(workspace.sources().get(entry.getKey()))) {
-                    Files.writeString(workspace.root().resolve(entry.getKey()), entry.getValue(), StandardCharsets.UTF_8);
+                    Files.writeString(
+                            workspace.root().resolve(entry.getKey()), entry.getValue(), StandardCharsets.UTF_8);
                 }
             }
         }

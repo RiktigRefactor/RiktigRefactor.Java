@@ -15,10 +15,13 @@ public record Workspace(Path root, Map<String, String> sources) {
 
     /** Loads a directory, or the directory of a build file such as pom.xml. */
     public static Workspace load(Path path) throws IOException {
-        Path root = (Files.isDirectory(path) ? path : path.toAbsolutePath().getParent()).toAbsolutePath().normalize();
+        Path root = (Files.isDirectory(path) ? path : path.toAbsolutePath().getParent())
+                .toAbsolutePath()
+                .normalize();
         Map<String, String> sources = new TreeMap<>();
         try (Stream<Path> files = Files.walk(root)) {
-            for (Path file : files.filter(f -> f.toString().endsWith(".java") && Files.isRegularFile(f)).toList()) {
+            for (Path file : files.filter(f -> f.toString().endsWith(".java") && Files.isRegularFile(f))
+                    .toList()) {
                 Path relative = root.relativize(file);
                 if (isSkipped(relative)) {
                     continue;

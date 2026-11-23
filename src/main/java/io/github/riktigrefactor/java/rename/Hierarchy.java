@@ -60,7 +60,8 @@ final class Hierarchy {
 
     private boolean related(ExecutableElement a, ExecutableElement b) {
         for (TypeElement type : sourceTypes.all) {
-            if (sourceTypes.isMemberOf(a, type) && sourceTypes.isMemberOf(b, type)
+            if (sourceTypes.isMemberOf(a, type)
+                    && sourceTypes.isMemberOf(b, type)
                     && (compilation.elements.overrides(a, b, type) || compilation.elements.overrides(b, a, type))) {
                 return true;
             }

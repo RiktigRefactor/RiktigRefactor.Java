@@ -29,9 +29,10 @@ public final class NameLocator {
             case MemberSelectTree select -> select.getIdentifier().toString();
             case MemberReferenceTree reference -> reference.getName().toString();
             case VariableTree variable -> variable.getName().toString();
-            case MethodTree method -> method.getName().contentEquals("<init>")
-                    ? enclosingClassName
-                    : method.getName().toString();
+            case MethodTree method ->
+                method.getName().contentEquals("<init>")
+                        ? enclosingClassName
+                        : method.getName().toString();
             case ClassTree type -> type.getSimpleName().toString();
             case TypeParameterTree parameter -> parameter.getName().toString();
             default -> null;
@@ -54,9 +55,19 @@ public final class NameLocator {
             case IdentifierTree identifier -> tokenStartingAt(tokens, start, name);
             case MemberSelectTree select -> tokenEndingAt(tokens, end, name);
             case MemberReferenceTree reference -> tokenEndingAt(tokens, end, name);
-            case VariableTree variable -> firstIdentifier(tokens, after(unit, start, variable.getModifiers(), variable.getType()), end, name);
-            case MethodTree method -> firstIdentifier(
-                    tokens, after(unit, start, method.getModifiers(), method.getReturnType(), lastOf(method.getTypeParameters())), end, name);
+            case VariableTree variable ->
+                firstIdentifier(tokens, after(unit, start, variable.getModifiers(), variable.getType()), end, name);
+            case MethodTree method ->
+                firstIdentifier(
+                        tokens,
+                        after(
+                                unit,
+                                start,
+                                method.getModifiers(),
+                                method.getReturnType(),
+                                lastOf(method.getTypeParameters())),
+                        end,
+                        name);
             case ClassTree type -> nameAfterKeyword(tokens, after(unit, start, type.getModifiers()), end, name);
             case TypeParameterTree parameter -> firstIdentifier(tokens, start, end, name);
             default -> null;
@@ -93,7 +104,9 @@ public final class NameLocator {
 
     private static Token tokenStartingAt(List<Token> tokens, long start, String name) {
         int index = firstIndexAtOrAfter(tokens, start);
-        if (index < tokens.size() && tokens.get(index).start() == start && tokens.get(index).isIdentifier(name)) {
+        if (index < tokens.size()
+                && tokens.get(index).start() == start
+                && tokens.get(index).isIdentifier(name)) {
             return tokens.get(index);
         }
         return null;
@@ -108,7 +121,9 @@ public final class NameLocator {
     }
 
     private static Token firstIdentifier(List<Token> tokens, long from, long end, String name) {
-        for (int i = firstIndexAtOrAfter(tokens, from); i < tokens.size() && tokens.get(i).start() < end; i++) {
+        for (int i = firstIndexAtOrAfter(tokens, from);
+                i < tokens.size() && tokens.get(i).start() < end;
+                i++) {
             if (tokens.get(i).isIdentifier(name)) {
                 return tokens.get(i);
             }
@@ -117,7 +132,9 @@ public final class NameLocator {
     }
 
     private static Token nameAfterKeyword(List<Token> tokens, long from, long end, String name) {
-        for (int i = firstIndexAtOrAfter(tokens, from); i + 1 < tokens.size() && tokens.get(i).start() < end; i++) {
+        for (int i = firstIndexAtOrAfter(tokens, from);
+                i + 1 < tokens.size() && tokens.get(i).start() < end;
+                i++) {
             Token token = tokens.get(i);
             if (token.kind() == Token.Kind.IDENTIFIER && TYPE_DECLARATION_KEYWORDS.contains(token.text())) {
                 return tokens.get(i + 1).isIdentifier(name) ? tokens.get(i + 1) : null;

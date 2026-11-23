@@ -40,7 +40,8 @@ public final class Compilation {
         this.sources = sources;
         JavaCompiler compiler = ToolProvider.getSystemJavaCompiler();
         DiagnosticCollector<JavaFileObject> diagnostics = new DiagnosticCollector<>();
-        StandardJavaFileManager fileManager = compiler.getStandardFileManager(diagnostics, null, StandardCharsets.UTF_8);
+        StandardJavaFileManager fileManager =
+                compiler.getStandardFileManager(diagnostics, null, StandardCharsets.UTF_8);
         try {
             fileManager.setLocation(StandardLocation.CLASS_PATH, List.of());
             fileManager.setLocation(StandardLocation.SOURCE_PATH, List.of());

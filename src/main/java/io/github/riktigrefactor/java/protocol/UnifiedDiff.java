@@ -31,10 +31,15 @@ public final class UnifiedDiff {
         int i = 0;
         while (i < edits.size()) {
             int firstLine = lineOf(lineStarts, edits.get(i).start());
-            int lastLine = lineOf(lineStarts, Math.max(edits.get(i).start(), edits.get(i).end() - 1));
+            int lastLine = lineOf(
+                    lineStarts, Math.max(edits.get(i).start(), edits.get(i).end() - 1));
             int j = i + 1;
             while (j < edits.size() && lineOf(lineStarts, edits.get(j).start()) <= lastLine + 1) {
-                lastLine = Math.max(lastLine, lineOf(lineStarts, Math.max(edits.get(j).start(), edits.get(j).end() - 1)));
+                lastLine = Math.max(
+                        lastLine,
+                        lineOf(
+                                lineStarts,
+                                Math.max(edits.get(j).start(), edits.get(j).end() - 1)));
                 j++;
             }
             int chunkStart = lineStarts.get(firstLine);
@@ -48,8 +53,15 @@ public final class UnifiedDiff {
             replaced.append(text, copied, chunkEnd);
             List<String> oldLines = lines(text.substring(chunkStart, chunkEnd));
             List<String> newLines = lines(replaced.toString());
-            out.append("@@ -").append(firstLine + 1).append(',').append(oldLines.size())
-                    .append(" +").append(firstLine + 1 + lineDelta).append(',').append(newLines.size()).append(" @@\n");
+            out.append("@@ -")
+                    .append(firstLine + 1)
+                    .append(',')
+                    .append(oldLines.size())
+                    .append(" +")
+                    .append(firstLine + 1 + lineDelta)
+                    .append(',')
+                    .append(newLines.size())
+                    .append(" @@\n");
             oldLines.forEach(line -> out.append('-').append(line).append('\n'));
             newLines.forEach(line -> out.append('+').append(line).append('\n'));
             lineDelta += newLines.size() - oldLines.size();

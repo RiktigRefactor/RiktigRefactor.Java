@@ -65,8 +65,11 @@ record Selection(int start, int end, TreePath expression, List<TreePath> stateme
                 if (tree instanceof ExpressionTree && treeStart == selectionStart && treeEnd == selectionEnd) {
                     expression[0] = path;
                 }
-                if (tree instanceof StatementTree && !(tree instanceof VariableTree) && !(tree instanceof ClassTree)
-                        && treeStart == selectionStart && treeEnd == selectionEnd) {
+                if (tree instanceof StatementTree
+                        && !(tree instanceof VariableTree)
+                        && !(tree instanceof ClassTree)
+                        && treeStart == selectionStart
+                        && treeEnd == selectionEnd) {
                     statementRuns.add(List.of(path));
                 }
                 List<? extends StatementTree> list = switch (tree) {

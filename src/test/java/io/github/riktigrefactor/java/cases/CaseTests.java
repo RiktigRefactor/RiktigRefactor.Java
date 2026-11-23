@@ -30,11 +30,15 @@ class CaseTests {
     Stream<DynamicTest> cases() throws IOException {
         List<Path> directories;
         try (Stream<Path> paths = Files.walk(CASES)) {
-            directories = paths.filter(p -> Files.isRegularFile(p.resolve("case.json"))).sorted().toList();
+            directories = paths.filter(p -> Files.isRegularFile(p.resolve("case.json")))
+                    .sorted()
+                    .toList();
         }
         assertFalse(directories.isEmpty(), "No test cases found under " + CASES.toAbsolutePath());
-        return directories.stream().map(directory ->
-                DynamicTest.dynamicTest(CASES.relativize(directory).toString().replace('\\', '/'), () -> run(Case.load(CASES, directory))));
+        return directories.stream()
+                .map(directory -> DynamicTest.dynamicTest(
+                        CASES.relativize(directory).toString().replace('\\', '/'),
+                        () -> run(Case.load(CASES, directory))));
     }
 
     private static Outcome refactor(Case testCase, boolean naive) {
@@ -45,9 +49,18 @@ class CaseTests {
                         ? Rename.runNaive(testCase.input(), testCase.markedFile(), testCase.selectionStart(), newName)
                         : Rename.run(testCase.input(), testCase.markedFile(), testCase.selectionStart(), newName);
             }
-            case "extract-iife" -> naive
-                    ? ExtractIife.runNaive(testCase.input(), testCase.markedFile(), testCase.selectionStart(), testCase.selectionEnd())
-                    : ExtractIife.run(testCase.input(), testCase.markedFile(), testCase.selectionStart(), testCase.selectionEnd());
+            case "extract-iife" ->
+                naive
+                        ? ExtractIife.runNaive(
+                                testCase.input(),
+                                testCase.markedFile(),
+                                testCase.selectionStart(),
+                                testCase.selectionEnd())
+                        : ExtractIife.run(
+                                testCase.input(),
+                                testCase.markedFile(),
+                                testCase.selectionStart(),
+                                testCase.selectionEnd());
             default -> throw new IllegalStateException("Unknown refactoring " + testCase.refactoring());
         };
     }
@@ -66,18 +79,23 @@ class CaseTests {
                 fail("Expected refusal " + testCase.refuse() + " but the refactoring succeeded");
                 return;
             }
-            assertEquals(testCase.refuse(), refused.reason().code(), refused.reason().message());
+            assertEquals(
+                    testCase.refuse(), refused.reason().code(), refused.reason().message());
             assertFalse(Files.exists(expectedDirectory), "A refusal case has no expected/ directory");
             return;
         }
         if (outcome instanceof Outcome.Refused refused) {
-            fail("Refused with " + refused.reason().code() + ": " + refused.reason().message());
+            fail("Refused with " + refused.reason().code() + ": "
+                    + refused.reason().message());
             return;
         }
         Outcome.Success success = (Outcome.Success) outcome;
-        List<String> warningCodes = success.warnings().stream().map(Warning::code).distinct().toList();
+        List<String> warningCodes =
+                success.warnings().stream().map(Warning::code).distinct().toList();
         for (String expectedWarning : testCase.warnings()) {
-            assertTrue(warningCodes.contains(expectedWarning), "Missing warning " + expectedWarning + "; got " + warningCodes);
+            assertTrue(
+                    warningCodes.contains(expectedWarning),
+                    "Missing warning " + expectedWarning + "; got " + warningCodes);
         }
         Map<String, String> output = TextEdit.apply(testCase.input(), success.edits());
         if (System.getenv("RIKTIG_WRITE_EXPECTED") != null && !Files.exists(expectedDirectory)) {
@@ -102,6 +120,7 @@ class CaseTests {
         }
         Map<String, String> naiveOutput = TextEdit.apply(testCase.input(), ((Outcome.Success) naive).edits());
         String failure = ProgramRunner.failure(naiveOutput);
-        assertNotNull(failure, "The naive implementation passes this edge case, so its assertion can't detect the problem");
+        assertNotNull(
+                failure, "The naive implementation passes this edge case, so its assertion can't detect the problem");
     }
 }

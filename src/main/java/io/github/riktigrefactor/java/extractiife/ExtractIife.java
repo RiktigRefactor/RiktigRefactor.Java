@@ -64,8 +64,11 @@ import javax.lang.model.type.WildcardType;
  */
 public final class ExtractIife {
     private static final Set<ElementKind> LOCAL_KINDS = Set.of(
-            ElementKind.LOCAL_VARIABLE, ElementKind.PARAMETER, ElementKind.EXCEPTION_PARAMETER,
-            ElementKind.RESOURCE_VARIABLE, ElementKind.BINDING_VARIABLE);
+            ElementKind.LOCAL_VARIABLE,
+            ElementKind.PARAMETER,
+            ElementKind.EXCEPTION_PARAMETER,
+            ElementKind.RESOURCE_VARIABLE,
+            ElementKind.BINDING_VARIABLE);
 
     private final Compilation compilation;
     private final String file;
@@ -93,8 +96,12 @@ public final class ExtractIife {
         }
         Selection selection = Selection.find(prepared.compilation(), file, start, end);
         if (selection == null) {
-            return Outcome.refuse(RefusalCodes.INVALID_SELECTION,
-                    "The selection is not exactly one expression, or whole statements of one block.", file, start, end,
+            return Outcome.refuse(
+                    RefusalCodes.INVALID_SELECTION,
+                    "The selection is not exactly one expression, or whole statements of one block.",
+                    file,
+                    start,
+                    end,
                     "Select a complete expression, or complete statements from the same block.");
         }
         return new ExtractIife(prepared.compilation(), file, selection).extract(naive);
@@ -109,7 +116,8 @@ public final class ExtractIife {
             }
             wrapper = expressionWrapper(compilation.trees.getTypeMirror(selection.expression()));
             if (wrapper == null) {
-                return refuse(RefusalCodes.TYPE_NOT_NAMEABLE, "The expression's type can't be written as a type argument.");
+                return refuse(
+                        RefusalCodes.TYPE_NOT_NAMEABLE, "The expression's type can't be written as a type argument.");
             }
         } else {
             wrapper = new String[] {"((java.lang.Runnable) () -> { ", " }).run();"};
@@ -129,11 +137,12 @@ public final class ExtractIife {
         if (naive) {
             return new Outcome.Success(edits, List.of());
         }
-        Verification verification = Verification.verify(compilation, edits, true, error -> switch (String.valueOf(error.getCode())) {
-            case "compiler.err.unreported.exception.need.to.catch.or.throw" -> RefusalCodes.CHECKED_EXCEPTION;
-            case "compiler.err.cant.ref.non.effectively.final.var" -> RefusalCodes.NOT_EFFECTIVELY_FINAL;
-            default -> RefusalCodes.WOULD_INTRODUCE_ERRORS;
-        });
+        Verification verification =
+                Verification.verify(compilation, edits, true, error -> switch (String.valueOf(error.getCode())) {
+                    case "compiler.err.unreported.exception.need.to.catch.or.throw" -> RefusalCodes.CHECKED_EXCEPTION;
+                    case "compiler.err.cant.ref.non.effectively.final.var" -> RefusalCodes.NOT_EFFECTIVELY_FINAL;
+                    default -> RefusalCodes.WOULD_INTRODUCE_ERRORS;
+                });
         if (verification.refusal != null) {
             return new Outcome.Refused(verification.refusal);
         }
@@ -154,8 +163,10 @@ public final class ExtractIife {
         Tree parent = path.getParentPath().getLeaf();
         Element element = compilation.trees.getElement(path);
         boolean isTypeOrPackage = element instanceof TypeElement || element instanceof PackageElement;
-        boolean isMethodName = parent instanceof MethodInvocationTree invocation && invocation.getMethodSelect() == tree;
-        boolean isSuper = tree instanceof IdentifierTree identifier && identifier.getName().contentEquals("super");
+        boolean isMethodName =
+                parent instanceof MethodInvocationTree invocation && invocation.getMethodSelect() == tree;
+        boolean isSuper = tree instanceof IdentifierTree identifier
+                && identifier.getName().contentEquals("super");
         if (isTypeOrPackage || isMethodName || isSuper) {
             return refuse(RefusalCodes.INVALID_SELECTION, "The selection is not an expression that denotes a value.");
         }
@@ -166,7 +177,8 @@ public final class ExtractIife {
             default -> false;
         };
         if (isWriteTarget) {
-            return refuse(RefusalCodes.SELECTION_IS_VARIABLE,
+            return refuse(
+                    RefusalCodes.SELECTION_IS_VARIABLE,
                     "The expression is assigned to, so it denotes a variable; a lambda would return only its value.");
         }
         boolean isTargetTyped = tree.getKind() == Tree.Kind.LAMBDA_EXPRESSION
@@ -174,11 +186,13 @@ public final class ExtractIife {
                 || tree.getKind() == Tree.Kind.NULL_LITERAL
                 || (tree instanceof NewArrayTree array && array.getType() == null);
         if (isTargetTyped) {
-            return refuse(RefusalCodes.TARGET_TYPED_EXPRESSION,
+            return refuse(
+                    RefusalCodes.TARGET_TYPED_EXPRESSION,
                     "The expression's meaning depends on its target type (a lambda, method reference, null, or array initializer).");
         }
         if (isConstantExpression(path)) {
-            return refuse(RefusalCodes.CONSTANT_EXPRESSION,
+            return refuse(
+                    RefusalCodes.CONSTANT_EXPRESSION,
                     "The expression is a compile-time constant; the call would not be, which can change types, conversions and switch labels.");
         }
         TypeMirror type = compilation.trees.getTypeMirror(path);
@@ -186,30 +200,38 @@ public final class ExtractIife {
             return refuse(RefusalCodes.INVALID_SELECTION, "The expression has no value.");
         }
         if (type.getKind() != TypeKind.VOID && !isNameable(type)) {
-            return refuse(RefusalCodes.TYPE_NOT_NAMEABLE,
-                    "The expression's type (" + type + ") can't be written as a type argument, such as an anonymous class or intersection type.");
+            return refuse(
+                    RefusalCodes.TYPE_NOT_NAMEABLE,
+                    "The expression's type (" + type
+                            + ") can't be written as a type argument, such as an anonymous class or intersection type.");
         }
         return null;
     }
 
     private static boolean isIncrementOrDecrement(Tree.Kind kind) {
-        return kind == Tree.Kind.PREFIX_INCREMENT || kind == Tree.Kind.PREFIX_DECREMENT
-                || kind == Tree.Kind.POSTFIX_INCREMENT || kind == Tree.Kind.POSTFIX_DECREMENT;
+        return kind == Tree.Kind.PREFIX_INCREMENT
+                || kind == Tree.Kind.PREFIX_DECREMENT
+                || kind == Tree.Kind.POSTFIX_INCREMENT
+                || kind == Tree.Kind.POSTFIX_DECREMENT;
     }
 
     /** Conservatively: whether the expression may be a constant expression (Java §15.29). */
     private boolean isConstantExpression(TreePath path) {
         return switch (path.getLeaf()) {
             case LiteralTree literal -> literal.getKind() != Tree.Kind.NULL_LITERAL;
-            case ParenthesizedTree parenthesized -> isConstantExpression(new TreePath(path, parenthesized.getExpression()));
+            case ParenthesizedTree parenthesized ->
+                isConstantExpression(new TreePath(path, parenthesized.getExpression()));
             case TypeCastTree cast -> isConstantExpression(new TreePath(path, cast.getExpression()));
-            case UnaryTree unary -> !isIncrementOrDecrement(unary.getKind())
-                    && isConstantExpression(new TreePath(path, unary.getExpression()));
-            case BinaryTree binary -> isConstantExpression(new TreePath(path, binary.getLeftOperand()))
-                    && isConstantExpression(new TreePath(path, binary.getRightOperand()));
-            case ConditionalExpressionTree conditional -> isConstantExpression(new TreePath(path, conditional.getCondition()))
-                    && isConstantExpression(new TreePath(path, conditional.getTrueExpression()))
-                    && isConstantExpression(new TreePath(path, conditional.getFalseExpression()));
+            case UnaryTree unary ->
+                !isIncrementOrDecrement(unary.getKind())
+                        && isConstantExpression(new TreePath(path, unary.getExpression()));
+            case BinaryTree binary ->
+                isConstantExpression(new TreePath(path, binary.getLeftOperand()))
+                        && isConstantExpression(new TreePath(path, binary.getRightOperand()));
+            case ConditionalExpressionTree conditional ->
+                isConstantExpression(new TreePath(path, conditional.getCondition()))
+                        && isConstantExpression(new TreePath(path, conditional.getTrueExpression()))
+                        && isConstantExpression(new TreePath(path, conditional.getFalseExpression()));
             case IdentifierTree identifier -> isConstantVariable(path);
             case MemberSelectTree select -> isConstantVariable(path);
             default -> false;
@@ -217,19 +239,23 @@ public final class ExtractIife {
     }
 
     private boolean isConstantVariable(TreePath path) {
-        return compilation.trees.getElement(path) instanceof VariableElement variable && variable.getConstantValue() != null;
+        return compilation.trees.getElement(path) instanceof VariableElement variable
+                && variable.getConstantValue() != null;
     }
 
     private boolean isNameable(TypeMirror type) {
         return switch (type) {
             case PrimitiveType primitive -> true;
             case ArrayType array -> isNameable(array.getComponentType());
-            case DeclaredType declared -> ((TypeElement) declared.asElement()).getNestingKind() != NestingKind.ANONYMOUS
-                    && declared.getTypeArguments().stream().allMatch(this::isNameable)
-                    && (declared.getEnclosingType().getKind() == TypeKind.NONE || isNameable(declared.getEnclosingType()));
+            case DeclaredType declared ->
+                ((TypeElement) declared.asElement()).getNestingKind() != NestingKind.ANONYMOUS
+                        && declared.getTypeArguments().stream().allMatch(this::isNameable)
+                        && (declared.getEnclosingType().getKind() == TypeKind.NONE
+                                || isNameable(declared.getEnclosingType()));
             case TypeVariable variable -> !variable.toString().contains("capture#");
-            case WildcardType wildcard -> (wildcard.getExtendsBound() == null || isNameable(wildcard.getExtendsBound()))
-                    && (wildcard.getSuperBound() == null || isNameable(wildcard.getSuperBound()));
+            case WildcardType wildcard ->
+                (wildcard.getExtendsBound() == null || isNameable(wildcard.getExtendsBound()))
+                        && (wildcard.getSuperBound() == null || isNameable(wildcard.getSuperBound()));
             default -> false;
         };
     }
@@ -243,10 +269,15 @@ public final class ExtractIife {
             case LONG -> new String[] {"((java.util.function.LongSupplier) () -> ", ").getAsLong()"};
             case DOUBLE -> new String[] {"((java.util.function.DoubleSupplier) () -> ", ").getAsDouble()"};
             case BYTE, SHORT, CHAR, FLOAT -> {
-                String boxed = compilation.types.boxedClass((PrimitiveType) type).getQualifiedName().toString();
+                String boxed = compilation
+                        .types
+                        .boxedClass((PrimitiveType) type)
+                        .getQualifiedName()
+                        .toString();
                 yield new String[] {"((" + type + ") ((java.util.function.Supplier<" + boxed + ">) () -> ", ").get())"};
             }
-            case DECLARED, ARRAY, TYPEVAR -> new String[] {"((java.util.function.Supplier<" + type + ">) () -> ", ").get()"};
+            case DECLARED, ARRAY, TYPEVAR ->
+                new String[] {"((java.util.function.Supplier<" + type + ">) () -> ", ").get()"};
             default -> null;
         };
     }
@@ -286,9 +317,12 @@ public final class ExtractIife {
                 }
 
                 private static boolean isJumpTarget(Tree tree) {
-                    return tree instanceof ForLoopTree || tree instanceof EnhancedForLoopTree
-                            || tree instanceof WhileLoopTree || tree instanceof DoWhileLoopTree
-                            || tree instanceof SwitchTree || tree instanceof SwitchExpressionTree;
+                    return tree instanceof ForLoopTree
+                            || tree instanceof EnhancedForLoopTree
+                            || tree instanceof WhileLoopTree
+                            || tree instanceof DoWhileLoopTree
+                            || tree instanceof SwitchTree
+                            || tree instanceof SwitchExpressionTree;
                 }
 
                 private void enter(Tree tree) {
@@ -311,7 +345,8 @@ public final class ExtractIife {
 
                 @Override
                 public Void visitReturn(ReturnTree tree, Void unused) {
-                    refusal[0] = refuse(RefusalCodes.NON_LOCAL_CONTROL_FLOW,
+                    refusal[0] = refuse(
+                            RefusalCodes.NON_LOCAL_CONTROL_FLOW,
                             "The selection contains `return`, which would return from the lambda instead of the method.",
                             "Shrink the selection to exclude the return statement.");
                     return null;
@@ -323,7 +358,8 @@ public final class ExtractIife {
                             ? jumpTargets.stream().anyMatch(t -> !(t instanceof SwitchExpressionTree))
                             : labels.contains(tree.getLabel().toString());
                     if (!hasTarget) {
-                        refusal[0] = refuse(RefusalCodes.NON_LOCAL_CONTROL_FLOW,
+                        refusal[0] = refuse(
+                                RefusalCodes.NON_LOCAL_CONTROL_FLOW,
                                 "The selection contains `break` whose target is outside the selection.",
                                 "Include the enclosing loop or switch in the selection.");
                     }
@@ -333,10 +369,12 @@ public final class ExtractIife {
                 @Override
                 public Void visitContinue(ContinueTree tree, Void unused) {
                     boolean hasTarget = tree.getLabel() == null
-                            ? jumpTargets.stream().anyMatch(t -> !(t instanceof SwitchTree) && !(t instanceof SwitchExpressionTree))
+                            ? jumpTargets.stream()
+                                    .anyMatch(t -> !(t instanceof SwitchTree) && !(t instanceof SwitchExpressionTree))
                             : labels.contains(tree.getLabel().toString());
                     if (!hasTarget) {
-                        refusal[0] = refuse(RefusalCodes.NON_LOCAL_CONTROL_FLOW,
+                        refusal[0] = refuse(
+                                RefusalCodes.NON_LOCAL_CONTROL_FLOW,
                                 "The selection contains `continue` whose loop is outside the selection.",
                                 "Include the enclosing loop in the selection.");
                     }
@@ -346,7 +384,8 @@ public final class ExtractIife {
                 @Override
                 public Void visitYield(YieldTree tree, Void unused) {
                     if (jumpTargets.stream().noneMatch(t -> t instanceof SwitchExpressionTree)) {
-                        refusal[0] = refuse(RefusalCodes.NON_LOCAL_CONTROL_FLOW,
+                        refusal[0] = refuse(
+                                RefusalCodes.NON_LOCAL_CONTROL_FLOW,
                                 "The selection contains `yield` whose switch expression is outside the selection.",
                                 "Include the enclosing switch expression in the selection.");
                         return null;
@@ -385,13 +424,18 @@ public final class ExtractIife {
                 @Override
                 public Void visitIdentifier(IdentifierTree tree, Void unused) {
                     Element element = compilation.trees.getElement(getCurrentPath());
-                    if (refusal[0] == null && element != null && LOCAL_KINDS.contains(element.getKind())
+                    if (refusal[0] == null
+                            && element != null
+                            && LOCAL_KINDS.contains(element.getKind())
                             && !isDeclaredInsideSelection(element)) {
                         if (isWrite(getCurrentPath())) {
-                            refusal[0] = refuse(RefusalCodes.WRITES_OUTER_VARIABLE,
-                                    "The selection assigns '" + tree.getName() + "', a local declared outside it, which a lambda can't do.");
+                            refusal[0] = refuse(
+                                    RefusalCodes.WRITES_OUTER_VARIABLE,
+                                    "The selection assigns '" + tree.getName()
+                                            + "', a local declared outside it, which a lambda can't do.");
                         } else if (!isEffectivelyFinal((VariableElement) element)) {
-                            refusal[0] = refuse(RefusalCodes.NOT_EFFECTIVELY_FINAL,
+                            refusal[0] = refuse(
+                                    RefusalCodes.NOT_EFFECTIVELY_FINAL,
                                     "'" + tree.getName() + "' is not effectively final, so a lambda can't capture it.",
                                     "Copy it into a final local before the selection, or make it effectively final.");
                         }
@@ -412,10 +456,13 @@ public final class ExtractIife {
             @Override
             public Void visitIdentifier(IdentifierTree tree, Void unused) {
                 long position = compilation.start(unit, tree);
-                if (refusal[0] == null && !selection.contains(position)
+                if (refusal[0] == null
+                        && !selection.contains(position)
                         && declaredInside.contains(compilation.trees.getElement(getCurrentPath()))) {
-                    refusal[0] = refuse(RefusalCodes.DECLARATION_ESCAPES,
-                            "'" + tree.getName() + "' is declared in the selection and used after it, where it would no longer be in scope.",
+                    refusal[0] = refuse(
+                            RefusalCodes.DECLARATION_ESCAPES,
+                            "'" + tree.getName()
+                                    + "' is declared in the selection and used after it, where it would no longer be in scope.",
                             "Extend the selection to include every use, or move the declaration out of the selection.");
                 }
                 return null;
@@ -426,7 +473,8 @@ public final class ExtractIife {
 
     private boolean isDeclaredInsideSelection(Element element) {
         TreePath declaration = compilation.trees.getPath(element);
-        return declaration != null && compilation.fileOfUnit.get(declaration.getCompilationUnit()).equals(file)
+        return declaration != null
+                && compilation.fileOfUnit.get(declaration.getCompilationUnit()).equals(file)
                 && selection.contains(compilation.start(declaration.getCompilationUnit(), declaration.getLeaf()));
     }
 

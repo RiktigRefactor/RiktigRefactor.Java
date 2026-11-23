@@ -61,14 +61,28 @@ final class ProgramRunner {
                     }
                 });
             }
-            boolean ok = compiler.getTask(null, fileManager, diagnostics, List.of("-proc:none", "-Xlint:none", "-nowarn"), null, files).call();
+            boolean ok = compiler.getTask(
+                            null,
+                            fileManager,
+                            diagnostics,
+                            List.of("-proc:none", "-Xlint:none", "-nowarn"),
+                            null,
+                            files)
+                    .call();
             if (ok) {
                 return null;
             }
             StringBuilder message = new StringBuilder();
             for (var diagnostic : diagnostics.getDiagnostics()) {
-                message.append('\n').append(diagnostic.getSource() == null ? "" : diagnostic.getSource().getName())
-                        .append(':').append(diagnostic.getLineNumber()).append(": ").append(diagnostic.getMessage(null));
+                message.append('\n')
+                        .append(
+                                diagnostic.getSource() == null
+                                        ? ""
+                                        : diagnostic.getSource().getName())
+                        .append(':')
+                        .append(diagnostic.getLineNumber())
+                        .append(": ")
+                        .append(diagnostic.getMessage(null));
             }
             return message.toString();
         } catch (IOException e) {
@@ -80,21 +94,28 @@ final class ProgramRunner {
         List<String> classNames;
         try (Stream<Path> files = Files.walk(output)) {
             classNames = files.filter(f -> f.toString().endsWith(".class"))
-                    .map(f -> output.relativize(f).toString().replace('\\', '/').replace('/', '.').replaceAll("\\.class$", ""))
+                    .map(f -> output.relativize(f)
+                            .toString()
+                            .replace('\\', '/')
+                            .replace('/', '.')
+                            .replaceAll("\\.class$", ""))
                     .sorted()
                     .toList();
         } catch (IOException e) {
             throw new UncheckedIOException(e);
         }
-        try (var loader = new URLClassLoader(new URL[] {output.toUri().toURL()}, ClassLoader.getPlatformClassLoader())) {
+        try (var loader =
+                new URLClassLoader(new URL[] {output.toUri().toURL()}, ClassLoader.getPlatformClassLoader())) {
             loader.setDefaultAssertionStatus(true);
             List<Method> mains = new ArrayList<>();
             for (String className : classNames) {
                 Class<?> type = Class.forName(className, false, loader);
                 for (Method method : type.getDeclaredMethods()) {
-                    if (method.getName().equals("main") && Modifier.isStatic(method.getModifiers())
+                    if (method.getName().equals("main")
+                            && Modifier.isStatic(method.getModifiers())
                             && Modifier.isPublic(method.getModifiers())
-                            && method.getParameterCount() == 1 && method.getParameterTypes()[0] == String[].class) {
+                            && method.getParameterCount() == 1
+                            && method.getParameterTypes()[0] == String[].class) {
                         mains.add(method);
                     }
                 }
@@ -109,7 +130,9 @@ final class ProgramRunner {
                 executor.submit(() -> main.invoke(null, (Object) new String[0])).get(10, TimeUnit.SECONDS);
                 return null;
             } catch (ExecutionException e) {
-                Throwable cause = e.getCause() instanceof InvocationTargetException invocation ? invocation.getCause() : e.getCause();
+                Throwable cause = e.getCause() instanceof InvocationTargetException invocation
+                        ? invocation.getCause()
+                        : e.getCause();
                 return "throws " + cause;
             } catch (TimeoutException e) {
                 return "did not finish within 10 seconds";
