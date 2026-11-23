@@ -1,0 +1,10 @@
+{
+  "options": {
+    "newName": "b"
+  },
+  "refuse": "conflicting-declaration",
+  "naiveShouldFail": true,
+  "spec": [
+    "JLS \u00a76.4 Shadowing and Obscuring"
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "options": {
+    "newName": "Application"
+  },
+  "refuse": "would-rename-file",
+  "naiveShouldFail": true,
+  "spec": [
+    "JLS \u00a77.6 Top Level Class and Interface Declarations"
+  ]
+}

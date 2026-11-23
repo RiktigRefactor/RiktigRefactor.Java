@@ -1,0 +1,11 @@
+{
+  "options": {
+    "newName": "f"
+  },
+  "refuse": "binding-would-change",
+  "naiveShouldFail": true,
+  "spec": [
+    "JLS \u00a715.12.2 Compile-Time Step 2: Determine Method Signature"
+  ],
+  "notes": "Renaming g to f makes f(\"x\") pick the more specific f(String)."
+}

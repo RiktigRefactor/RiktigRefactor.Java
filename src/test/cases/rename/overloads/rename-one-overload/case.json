@@ -1,0 +1,8 @@
+{
+  "options": {
+    "newName": "describeNumber"
+  },
+  "spec": [
+    "JLS \u00a715.12.2 Compile-Time Step 2: Determine Method Signature"
+  ]
+}

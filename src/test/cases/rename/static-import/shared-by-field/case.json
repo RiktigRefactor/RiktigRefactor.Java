@@ -1,0 +1,11 @@
+{
+  "options": {
+    "newName": "compute"
+  },
+  "refuse": "static-import-shared",
+  "naiveShouldFail": true,
+  "spec": [
+    "JLS \u00a77.5.3 Single-Static-Import Declarations"
+  ],
+  "notes": "The import names both the field and the method; renaming only the method would need two imports."
+}

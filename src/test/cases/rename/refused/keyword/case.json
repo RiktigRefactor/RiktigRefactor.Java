@@ -1,0 +1,11 @@
+{
+  "options": {
+    "newName": "class"
+  },
+  "refuse": "invalid-identifier",
+  "naiveShouldFail": true,
+  "spec": [
+    "JLS \u00a73.8 Identifiers",
+    "JLS \u00a73.9 Keywords"
+  ]
+}

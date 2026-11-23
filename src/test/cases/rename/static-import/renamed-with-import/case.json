@@ -1,0 +1,8 @@
+{
+  "options": {
+    "newName": "doubled"
+  },
+  "spec": [
+    "JLS \u00a77.5.3 Single-Static-Import Declarations"
+  ]
+}

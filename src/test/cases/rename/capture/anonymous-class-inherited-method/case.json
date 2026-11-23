@@ -1,0 +1,12 @@
+{
+  "options": {
+    "newName": "size"
+  },
+  "refuse": "binding-would-change",
+  "naiveShouldFail": true,
+  "spec": [
+    "JLS \u00a715.9.5 Anonymous Class Declarations",
+    "JLS \u00a715.12.1 Compile-Time Step 1: Determine Type to Search"
+  ],
+  "notes": "Inside the anonymous class, size() finds the inherited Base.size first."
+}

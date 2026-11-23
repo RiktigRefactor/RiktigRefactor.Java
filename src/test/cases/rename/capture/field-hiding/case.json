@@ -1,0 +1,10 @@
+{
+  "options": {
+    "newName": "v"
+  },
+  "refuse": "binding-would-change",
+  "naiveShouldFail": true,
+  "spec": [
+    "JLS \u00a78.3.1.1 Hiding (by fields)"
+  ]
+}

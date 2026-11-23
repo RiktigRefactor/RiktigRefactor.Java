@@ -1,0 +1,10 @@
+{
+  "options": {
+    "newName": "n"
+  },
+  "naiveShouldFail": true,
+  "spec": [
+    "JLS \u00a78.4.8.4 Inheriting Methods with Override-Equivalent Signatures"
+  ],
+  "notes": "A.m implements I.m in C, though neither type mentions the other, so both must be renamed."
+}

@@ -1,0 +1,10 @@
+{
+  "options": {
+    "newName": "vertices"
+  },
+  "naiveShouldFail": true,
+  "spec": [
+    "JLS \u00a79.4.1 Inheritance and Overriding",
+    "JLS \u00a715.9.5 Anonymous Class Declarations"
+  ]
+}

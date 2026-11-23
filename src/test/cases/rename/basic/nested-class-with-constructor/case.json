@@ -1,0 +1,9 @@
+{
+  "options": {
+    "newName": "Crate"
+  },
+  "spec": [
+    "JLS \u00a78.1 Class Declarations",
+    "JLS \u00a78.8 Constructor Declarations"
+  ]
+}

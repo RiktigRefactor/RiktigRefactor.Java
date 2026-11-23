@@ -1,0 +1,10 @@
+{
+  "options": {
+    "newName": "start"
+  },
+  "refuse": "entry-point",
+  "naiveShouldFail": true,
+  "spec": [
+    "JLS \u00a712.1.4 Invoke Test.main"
+  ]
+}

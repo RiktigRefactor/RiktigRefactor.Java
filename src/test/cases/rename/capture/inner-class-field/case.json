@@ -1,0 +1,11 @@
+{
+  "options": {
+    "newName": "inner"
+  },
+  "refuse": "binding-would-change",
+  "naiveShouldFail": true,
+  "spec": [
+    "JLS \u00a76.4.1 Shadowing",
+    "JLS \u00a78.1.3 Inner Classes and Enclosing Instances"
+  ]
+}

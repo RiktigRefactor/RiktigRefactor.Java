@@ -1,0 +1,9 @@
+{
+  "options": {
+    "newName": "label"
+  },
+  "naiveShouldFail": true,
+  "spec": [
+    "JLS \u00a78.4.8.1 Overriding (by Instance Methods)"
+  ]
+}
