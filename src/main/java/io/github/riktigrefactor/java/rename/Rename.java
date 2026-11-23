@@ -12,10 +12,10 @@ import io.github.riktigrefactor.java.RefusalCodes;
 import io.github.riktigrefactor.java.Warning;
 import io.github.riktigrefactor.java.analysis.Bindings;
 import io.github.riktigrefactor.java.analysis.Compilation;
-import io.github.riktigrefactor.java.analysis.Lexer;
 import io.github.riktigrefactor.java.analysis.NameLocator;
 import io.github.riktigrefactor.java.analysis.Occurrences;
 import io.github.riktigrefactor.java.analysis.Occurrences.Occurrence;
+import io.github.riktigrefactor.java.analysis.Prepared;
 import io.github.riktigrefactor.java.analysis.TextEdit;
 import io.github.riktigrefactor.java.analysis.Token;
 import io.github.riktigrefactor.java.analysis.Verification;
@@ -61,23 +61,11 @@ public final class Rename {
     }
 
     private static Outcome run(Map<String, String> sources, String file, int cursor, String newName, boolean naive) {
-        for (var entry : sources.entrySet()) {
-            int escape = Lexer.firstUnicodeEscape(entry.getValue());
-            if (escape >= 0) {
-                return Outcome.refuse(RefusalCodes.UNICODE_ESCAPE,
-                        "The file contains a Unicode escape, which the tool does not support yet.",
-                        entry.getKey(), escape, escape);
-            }
+        Prepared prepared = Prepared.analyze(sources);
+        if (prepared.refusal() != null) {
+            return prepared.refusal();
         }
-        Compilation compilation = Compilation.analyze(sources);
-        if (!compilation.errors.isEmpty()) {
-            var error = compilation.errors.getFirst();
-            int offset = (int) Math.max(0, error.getStartPosition());
-            return Outcome.refuse(RefusalCodes.INPUT_HAS_ERRORS,
-                    "The code does not compile, so its meaning can't be known: " + error.getMessage(null),
-                    Compilation.fileOf(error), offset, offset);
-        }
-        return new Rename(compilation, newName).rename(file, cursor, naive);
+        return new Rename(prepared.compilation(), newName).rename(file, cursor, naive);
     }
 
     private Outcome rename(String file, int cursor, boolean naive) {
