@@ -75,7 +75,7 @@ public final class Support {
         }
         StringBuilder name = new StringBuilder(type.getSimpleName());
         for (Element e = type.getEnclosingElement(); e instanceof TypeElement outer; e = e.getEnclosingElement()) {
-            if (((TypeElement) outer).getNestingKind() == NestingKind.LOCAL) {
+            if (outer.getNestingKind() == NestingKind.LOCAL) {
                 return type.getSimpleName().toString();
             }
             name.insert(0, outer.getSimpleName() + ".");
