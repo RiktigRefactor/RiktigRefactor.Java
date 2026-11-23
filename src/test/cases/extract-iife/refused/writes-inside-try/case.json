@@ -1,0 +1,9 @@
+{
+  "options": {},
+  "refuse": "writes-lost-on-exception",
+  "naiveShouldFail": true,
+  "spec": [
+    "Java §14.20 The try statement"
+  ],
+  "notes": "The exception escapes the lambda before it returns the new value, so the catch block would see 0."
+}

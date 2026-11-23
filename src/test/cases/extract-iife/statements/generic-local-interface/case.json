@@ -1,0 +1,8 @@
+{
+  "options": {},
+  "spec": [
+    "Java §14.3 Local Class and Interface Declarations",
+    "Java §8.1.2 Generic Classes and Type Parameters"
+  ],
+  "notes": "A local interface is implicitly static, so it declares the type variable of the method, with its bound, as its own."
+}

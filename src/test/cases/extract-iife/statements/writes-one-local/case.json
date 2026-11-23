@@ -1,7 +1,5 @@
 {
   "options": {},
-  "refuse": "writes-outer-variable",
-  "naiveShouldFail": true,
   "spec": [
     "Java §15.27.2 Lambda Body"
   ]

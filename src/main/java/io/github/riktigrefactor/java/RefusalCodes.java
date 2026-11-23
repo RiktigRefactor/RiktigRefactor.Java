@@ -28,6 +28,11 @@ public final class RefusalCodes {
     public static final String NOT_EFFECTIVELY_FINAL = "not-effectively-final";
     public static final String DECLARATION_ESCAPES = "declaration-escapes";
     public static final String CHECKED_EXCEPTION = "checked-exception";
+    public static final String WRITES_LOST_ON_EXCEPTION = "writes-lost-on-exception";
+    public static final String NO_STATEMENT_CONTEXT = "no-statement-context";
+    public static final String SUPER_ACCESS = "super-access";
+    public static final String QUALIFIED_THIS = "qualified-this";
+    public static final String OUTER_INSTANCE_ACCESS = "outer-instance-access";
     public static final String INTERNAL_VERIFICATION_FAILED = "internal-verification-failed";
 
     private RefusalCodes() {}

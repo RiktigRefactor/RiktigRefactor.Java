@@ -100,7 +100,7 @@ class MainTests {
         assertEquals(4, json.at("/edits/0/start/line").asInt());
         assertEquals(21, json.at("/edits/0/start/column").asInt());
         assertEquals(
-                "((java.util.function.IntSupplier) () -> ",
+                "((java.util.function.IntUnaryOperator) (priceArg) -> ",
                 json.at("/edits/0/newText").asText());
         assertTrue(json.at("/commit/subject").asText().startsWith(". r "));
     }

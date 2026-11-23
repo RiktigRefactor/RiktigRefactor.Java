@@ -1,0 +1,9 @@
+{
+  "options": {},
+  "refuse": "no-statement-context",
+  "spec": [
+    "Java §8.3.2 Field Initialization",
+    "Java §14.3 Local Class and Interface Declarations"
+  ],
+  "notes": "A char result needs a local interface, and a field initializer has no statement to declare it before."
+}

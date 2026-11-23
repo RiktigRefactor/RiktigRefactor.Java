@@ -6,7 +6,7 @@ public class Program {
     }
 
     int compute() {
-        return ((java.util.function.IntSupplier) () -> this.twice() + count).getAsInt();
+        return ((java.util.function.ToIntFunction<Program>) (self) -> self.twice() + self.count).applyAsInt(this);
     }
 
     public static void main(String[] args) {

@@ -3,7 +3,7 @@ import java.util.*;
 public class Program {
     static class Holder {
         int base = 2;
-        int value = ((java.util.function.IntSupplier) () -> base * 3).getAsInt();
+        int value = ((java.util.function.ToIntFunction<Program.Holder>) (self) -> self.base * 3).applyAsInt(this);
     }
 
     public static void main(String[] args) throws Exception {

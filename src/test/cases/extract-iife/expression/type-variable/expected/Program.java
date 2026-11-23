@@ -2,7 +2,7 @@ import java.util.*;
 
 public class Program {
     static <T> T identity(T value) {
-        return ((java.util.function.Supplier<T>) () -> value).get();
+        return ((java.util.function.Function<T, T>) (valueArg) -> valueArg).apply(value);
     }
 
     public static void main(String[] args) throws Exception {

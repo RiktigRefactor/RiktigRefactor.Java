@@ -29,8 +29,13 @@ A new code is listed in the release notes.
 | `target-typed-expression` | Extract IIFE: the expression's meaning depends on its target type (a lambda, a method reference, `null`, or an array initializer). |
 | `constant-expression` | Extract IIFE: the expression is (or may be) a compile-time constant; a method call is not, which can change the type of a conditional, narrowing in assignments, `switch` labels, and string interning. |
 | `selection-is-variable` | Extract IIFE: the expression is assigned to or incremented, so it denotes a variable; the lambda would return only its value. |
-| `writes-outer-variable` | Extract IIFE: the selection assigns a local variable or parameter declared outside it, which a lambda can't do. |
-| `not-effectively-final` | Extract IIFE: the selection reads a local declared outside it that is not (provably) effectively final, so a lambda can't capture it. |
+| `writes-outer-variable` | Extract IIFE: the selected expression assigns a local variable or parameter declared outside it; only whole statements can return written variables. |
+| `not-effectively-final` | Extract IIFE: a lambda or class inside the selection would capture a parameter that the selection writes. |
 | `declaration-escapes` | Extract IIFE: a variable or class the selection declares is used after it, where it would no longer be in scope. |
-| `checked-exception` | Extract IIFE: the selection can throw a checked exception, which the lambda's functional interface does not allow. |
+| `checked-exception` | Extract IIFE: the checked exceptions the selection can throw can't be determined (a generic `throws` clause, or a resource without a `close` method), so the local interface's `throws` clause can't be written. |
+| `writes-lost-on-exception` | Extract IIFE: inside a `try`, the selection assigns a local read afterwards; an exception would lose the assignment, because the lambda returns values only when it completes. |
+| `no-statement-context` | Extract IIFE: the lambda needs a local interface or record, and no statement can hold its declaration (a field initializer, or a body that is a single expression). |
+| `super-access` | Extract IIFE: the selection uses `super`, which a parameter can't stand for. |
+| `qualified-this` | Extract IIFE: the selection uses `Outer.this` or `Outer.super`. |
+| `outer-instance-access` | Extract IIFE: the selection uses a member of an enclosing instance (not `this`), which can't be passed in as the receiver. |
 | `internal-verification-failed` | The tool's own check of its result failed. This is a bug in the tool; please report it. |

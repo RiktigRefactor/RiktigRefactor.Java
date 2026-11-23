@@ -44,7 +44,6 @@ import java.util.Map;
 import java.util.Set;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ElementKind;
-import javax.lang.model.element.Modifier;
 import javax.lang.model.element.NestingKind;
 import javax.lang.model.element.PackageElement;
 import javax.lang.model.element.TypeElement;
@@ -108,45 +107,57 @@ public final class ExtractIife {
     }
 
     private Outcome extract(boolean naive) {
-        String[] wrapper;
-        if (selection.isExpression()) {
-            Outcome refusal = naive ? null : checkExpression();
-            if (refusal != null) {
-                return refusal;
-            }
-            wrapper = expressionWrapper(compilation.trees.getTypeMirror(selection.expression()));
-            if (wrapper == null) {
-                return refuse(
-                        RefusalCodes.TYPE_NOT_NAMEABLE, "The expression's type can't be written as a type argument.");
-            }
-        } else {
-            wrapper = new String[] {"((java.lang.Runnable) () -> { ", " }).run();"};
-        }
         if (!naive) {
-            Outcome refusal = checkControlFlow();
+            Outcome refusal = selection.isExpression() ? checkExpression() : null;
             if (refusal == null) {
-                refusal = checkVariables();
+                refusal = checkControlFlow();
+            }
+            if (refusal == null) {
+                refusal = checkDeclarationsEscape();
             }
             if (refusal != null) {
                 return refusal;
             }
         }
-        List<TextEdit> edits = List.of(
-                new TextEdit(file, selection.start(), selection.start(), wrapper[0]),
-                new TextEdit(file, selection.end(), selection.end(), wrapper[1]));
-        if (naive) {
-            return new Outcome.Success(edits, List.of());
+        Captures captures = Captures.analyze(compilation, file, selection);
+        if (!naive && captures.refusalCode != null) {
+            return refuse(captures.refusalCode, captures.refusalMessage);
         }
-        Verification verification =
-                Verification.verify(compilation, edits, true, error -> switch (String.valueOf(error.getCode())) {
+        if (!naive && selection.isExpression() && !captures.written.isEmpty()) {
+            return refuse(
+                    RefusalCodes.WRITES_OUTER_VARIABLE,
+                    "The selected expression assigns a local declared outside it; only whole statements can return a written variable.",
+                    "Select the whole statement instead.");
+        }
+        if (!naive && !captures.written.isEmpty() && captures.isInsideTry()) {
+            return refuse(
+                    RefusalCodes.WRITES_LOST_ON_EXCEPTION,
+                    "Inside a try statement, the selection assigns a local declared outside it; an exception would lose the assignment, because the lambda returns values only when it completes.");
+        }
+        IifeWriter writer = new IifeWriter(compilation, file, selection, captures, naive);
+        Outcome generated = writer.write();
+        if (generated instanceof Outcome.Refused refused) {
+            return naive ? generated : refused;
+        }
+        List<TextEdit> edits = ((Outcome.Success) generated).edits();
+        if (naive) {
+            return generated;
+        }
+        Verification verification = Verification.verify(
+                compilation,
+                edits,
+                true,
+                error -> switch (String.valueOf(error.getCode())) {
                     case "compiler.err.unreported.exception.need.to.catch.or.throw" -> RefusalCodes.CHECKED_EXCEPTION;
                     case "compiler.err.cant.ref.non.effectively.final.var" -> RefusalCodes.NOT_EFFECTIVELY_FINAL;
                     default -> RefusalCodes.WOULD_INTRODUCE_ERRORS;
-                });
+                },
+                Verification.Mode.STRICT,
+                writer::expectedAfter);
         if (verification.refusal != null) {
             return new Outcome.Refused(verification.refusal);
         }
-        return new Outcome.Success(edits, List.of());
+        return generated;
     }
 
     private Outcome refuse(String code, String message) {
@@ -243,13 +254,13 @@ public final class ExtractIife {
                 && variable.getConstantValue() != null;
     }
 
-    private boolean isNameable(TypeMirror type) {
+    static boolean isNameable(TypeMirror type) {
         return switch (type) {
             case PrimitiveType primitive -> true;
             case ArrayType array -> isNameable(array.getComponentType());
             case DeclaredType declared ->
                 ((TypeElement) declared.asElement()).getNestingKind() != NestingKind.ANONYMOUS
-                        && declared.getTypeArguments().stream().allMatch(this::isNameable)
+                        && declared.getTypeArguments().stream().allMatch(ExtractIife::isNameable)
                         && (declared.getEnclosingType().getKind() == TypeKind.NONE
                                 || isNameable(declared.getEnclosingType()));
             case TypeVariable variable -> !variable.toString().contains("capture#");
@@ -257,28 +268,6 @@ public final class ExtractIife {
                 (wildcard.getExtendsBound() == null || isNameable(wildcard.getExtendsBound()))
                         && (wildcard.getSuperBound() == null || isNameable(wildcard.getSuperBound()));
             default -> false;
-        };
-    }
-
-    /** The text to insert before and after the expression, or null if its type can't be written. */
-    private String[] expressionWrapper(TypeMirror type) {
-        return switch (type.getKind()) {
-            case VOID -> new String[] {"((java.lang.Runnable) () -> ", ").run()"};
-            case BOOLEAN -> new String[] {"((java.util.function.BooleanSupplier) () -> ", ").getAsBoolean()"};
-            case INT -> new String[] {"((java.util.function.IntSupplier) () -> ", ").getAsInt()"};
-            case LONG -> new String[] {"((java.util.function.LongSupplier) () -> ", ").getAsLong()"};
-            case DOUBLE -> new String[] {"((java.util.function.DoubleSupplier) () -> ", ").getAsDouble()"};
-            case BYTE, SHORT, CHAR, FLOAT -> {
-                String boxed = compilation
-                        .types
-                        .boxedClass((PrimitiveType) type)
-                        .getQualifiedName()
-                        .toString();
-                yield new String[] {"((" + type + ") ((java.util.function.Supplier<" + boxed + ">) () -> ", ").get())"};
-            }
-            case DECLARED, ARRAY, TYPEVAR ->
-                new String[] {"((java.util.function.Supplier<" + type + ">) () -> ", ").get()"};
-            default -> null;
         };
     }
 
@@ -400,14 +389,10 @@ public final class ExtractIife {
         return null;
     }
 
-    /**
-     * A lambda can only read locals of the enclosing scope that are effectively final, and can't assign them; and a
-     * local the selection declares would no longer be in scope after it.
-     */
-    private Outcome checkVariables() {
+    /** A local or class the selection declares would no longer be in scope after it. */
+    private Outcome checkDeclarationsEscape() {
         Set<Element> declaredInside = new HashSet<>();
         for (TreePath root : selection.roots()) {
-            Outcome[] refusal = new Outcome[1];
             new TreePathScanner<Void, Void>() {
                 @Override
                 public Void visitVariable(VariableTree tree, Void unused) {
@@ -420,32 +405,7 @@ public final class ExtractIife {
                     declaredInside.add(compilation.trees.getElement(getCurrentPath()));
                     return super.visitClass(tree, unused);
                 }
-
-                @Override
-                public Void visitIdentifier(IdentifierTree tree, Void unused) {
-                    Element element = compilation.trees.getElement(getCurrentPath());
-                    if (refusal[0] == null
-                            && element != null
-                            && LOCAL_KINDS.contains(element.getKind())
-                            && !isDeclaredInsideSelection(element)) {
-                        if (isWrite(getCurrentPath())) {
-                            refusal[0] = refuse(
-                                    RefusalCodes.WRITES_OUTER_VARIABLE,
-                                    "The selection assigns '" + tree.getName()
-                                            + "', a local declared outside it, which a lambda can't do.");
-                        } else if (!isEffectivelyFinal((VariableElement) element)) {
-                            refusal[0] = refuse(
-                                    RefusalCodes.NOT_EFFECTIVELY_FINAL,
-                                    "'" + tree.getName() + "' is not effectively final, so a lambda can't capture it.",
-                                    "Copy it into a final local before the selection, or make it effectively final.");
-                        }
-                    }
-                    return null;
-                }
             }.scan(root, null);
-            if (refusal[0] != null) {
-                return refusal[0];
-            }
         }
         if (declaredInside.isEmpty()) {
             return null;
@@ -469,50 +429,5 @@ public final class ExtractIife {
             }
         }.scan(new TreePath(unit), null);
         return refusal[0];
-    }
-
-    private boolean isDeclaredInsideSelection(Element element) {
-        TreePath declaration = compilation.trees.getPath(element);
-        return declaration != null
-                && compilation.fileOfUnit.get(declaration.getCompilationUnit()).equals(file)
-                && selection.contains(compilation.start(declaration.getCompilationUnit(), declaration.getLeaf()));
-    }
-
-    private static boolean isWrite(TreePath path) {
-        Tree tree = path.getLeaf();
-        return switch (path.getParentPath().getLeaf()) {
-            case AssignmentTree assignment -> assignment.getVariable() == tree;
-            case CompoundAssignmentTree assignment -> assignment.getVariable() == tree;
-            case UnaryTree unary -> unary.getExpression() == tree && isIncrementOrDecrement(unary.getKind());
-            default -> false;
-        };
-    }
-
-    /** Conservatively (Java §4.12.4): final, or initialized where declared and never assigned. */
-    private boolean isEffectivelyFinal(VariableElement variable) {
-        if (variable.getModifiers().contains(Modifier.FINAL)) {
-            return true;
-        }
-        TreePath declaration = compilation.trees.getPath(variable);
-        if (declaration == null || !(declaration.getLeaf() instanceof VariableTree tree)) {
-            return false;
-        }
-        boolean initialized = tree.getInitializer() != null
-                || variable.getKind() != ElementKind.LOCAL_VARIABLE
-                || declaration.getParentPath().getLeaf() instanceof EnhancedForLoopTree;
-        if (!initialized) {
-            return false;
-        }
-        boolean[] assigned = new boolean[1];
-        new TreePathScanner<Void, Void>() {
-            @Override
-            public Void visitIdentifier(IdentifierTree identifier, Void unused) {
-                if (isWrite(getCurrentPath()) && variable.equals(compilation.trees.getElement(getCurrentPath()))) {
-                    assigned[0] = true;
-                }
-                return null;
-            }
-        }.scan(new TreePath(declaration.getCompilationUnit()), null);
-        return !assigned[0];
     }
 }

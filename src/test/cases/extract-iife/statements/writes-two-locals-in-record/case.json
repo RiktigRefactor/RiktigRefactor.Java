@@ -1,0 +1,8 @@
+{
+  "options": {},
+  "spec": [
+    "Java §8.10 Record Classes",
+    "Java §14.3 Local Class and Interface Declarations"
+  ],
+  "notes": "Two written locals come back in a local record and are assigned from it."
+}

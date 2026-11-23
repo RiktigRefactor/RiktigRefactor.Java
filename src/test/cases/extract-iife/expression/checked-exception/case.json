@@ -1,9 +1,8 @@
 {
   "options": {},
-  "refuse": "checked-exception",
-  "naiveShouldFail": true,
   "spec": [
     "Java §11.2.3 Exception Checking",
     "Java §15.27.3 Type of a Lambda Expression"
-  ]
+  ],
+  "notes": "No java.util.function interface may throw a checked exception, so a local interface declares it."
 }

@@ -7,7 +7,7 @@ public class Program {
 
     public static void main(String[] args) throws Exception {
         List<String> trace = new ArrayList<>();
-        ((java.lang.Runnable) () -> log(trace, "a")).run();
+        ((java.util.function.Consumer<java.util.List<java.lang.String>>) (traceArg) -> log(traceArg, "a")).accept(trace);
         log(trace, "b");
         if (!trace.equals(List.of("a", "b"))) {
             throw new AssertionError(trace);

@@ -111,22 +111,4 @@ public record TextEdit(
         }
         return result;
     }
-
-    /** Merges insertions at the same position into one, keeping their order, so that edits never overlap. */
-    public static List<TextEdit> mergeInsertions(List<TextEdit> edits) {
-        Map<String, TextEdit> insertions = new LinkedHashMap<>();
-        List<TextEdit> result = new ArrayList<>();
-        for (TextEdit edit : edits) {
-            if (edit.start == edit.end && !edit.isCopy()) {
-                insertions.merge(
-                        edit.file + ":" + edit.start,
-                        edit,
-                        (a, b) -> new TextEdit(a.file, a.start, a.end, a.newText + b.newText));
-            } else {
-                result.add(edit);
-            }
-        }
-        result.addAll(insertions.values());
-        return result;
-    }
 }

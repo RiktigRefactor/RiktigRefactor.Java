@@ -1,7 +1,5 @@
 {
   "options": {},
-  "refuse": "not-effectively-final",
-  "naiveShouldFail": true,
   "spec": [
     "Java §4.12.4 final Variables",
     "Java §14.14.1 The basic for Statement"

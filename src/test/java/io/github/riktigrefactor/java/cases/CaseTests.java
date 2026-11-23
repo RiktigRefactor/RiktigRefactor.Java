@@ -38,8 +38,16 @@ class CaseTests {
         assertFalse(directories.isEmpty(), "No test cases found under " + CASES.toAbsolutePath());
         return directories.stream()
                 .map(directory -> DynamicTest.dynamicTest(
-                        CASES.relativize(directory).toString().replace('\\', '/'),
-                        () -> run(Case.load(CASES, directory))));
+                        CASES.relativize(directory).toString().replace('\\', '/'), () -> runNamed(directory)));
+    }
+
+    private static void runNamed(Path directory) throws IOException {
+        try {
+            run(Case.load(CASES, directory));
+        } catch (AssertionError e) {
+            throw new AssertionError(
+                    CASES.relativize(directory).toString().replace('\\', '/') + ": " + e.getMessage(), e);
+        }
     }
 
     private static Outcome refactor(Case testCase, boolean naive) {
