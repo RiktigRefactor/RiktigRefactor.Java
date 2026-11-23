@@ -102,6 +102,8 @@ The specification asks for the latest stable language version; moving to it is p
 
 Run `./build-and-test` on Linux or macOS, or `build-and-test.cmd` on Windows (it needs Git for Windows).
 It needs a JDK 21 or newer; the Maven wrapper downloads Maven itself.
+It checks formatting (palantir-java-format, through Spotless) and runs every test.
+Run `./tidy-code` to format the code.
 
 Test cases live in `src/test/cases`, in the [format defined by the specification](https://github.com/RiktigRefactor/riktigrefactor.spec/blob/main/test-format.md), with a `case.json` per case.
 Every input and expected program is compiled and run, and edge cases must fail under a deliberately naive implementation.

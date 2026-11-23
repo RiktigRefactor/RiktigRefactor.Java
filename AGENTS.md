@@ -4,6 +4,7 @@ Read its `README.md`, `principles.md`, and the page for the refactoring you are 
 Soundness comes before completeness: refusing is always acceptable, and wrong output never is.
 
 Don't bother touching line endings and BOMs.
+Let `./tidy-code` handle formatting.
 
 When asked to "build" or "test", run `./build-and-test`.
 Also run it automatically before each commit.
