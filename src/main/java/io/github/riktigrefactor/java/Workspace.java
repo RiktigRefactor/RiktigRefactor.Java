@@ -44,12 +44,20 @@ public record Workspace(Path root, Map<String, String> sources) {
 
     /** The workspace-relative form of a file given on the command line, relative to the root or the current directory. */
     public String relativeFile(String file) {
+        String asGiven = file.replace('\\', '/');
+        if (sources.containsKey(asGiven)) {
+            return asGiven;
+        }
         Path path = Path.of(file);
         Path absolute = path.isAbsolute() ? path : Path.of("").toAbsolutePath().resolve(path);
-        String candidate = root.relativize(absolute.normalize()).toString().replace('\\', '/');
-        if (sources.containsKey(candidate)) {
-            return candidate;
+        try {
+            String candidate = root.relativize(absolute.normalize()).toString().replace('\\', '/');
+            if (sources.containsKey(candidate)) {
+                return candidate;
+            }
+        } catch (IllegalArgumentException differentRoot) {
+            // A path on another drive can't be inside the workspace.
         }
-        return file.replace('\\', '/');
+        return asGiven;
     }
 }
