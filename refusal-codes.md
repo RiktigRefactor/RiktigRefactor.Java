@@ -13,7 +13,7 @@ A new code is listed in the release notes.
 | `not-renameable` | The symbol can't be renamed: it is a package, it is not declared in the workspace, or it is declared implicitly (such as an enum's `values()`). |
 | `invalid-identifier` | The new name is not a valid identifier, or is a keyword or a restricted identifier such as `var` or `record`. |
 | `overrides-external` | The method overrides, or must be renamed together with a method that overrides, a method declared outside the workspace (such as `toString` or `Comparable.compareTo`). |
-| `entry-point` | The method is found by name from outside Java: a `main` method or a `native` method, or the rename would create a `main` method. |
+| `entry-point` | Rename or Move static member: the method is found by name from outside Java: a `main` method or a `native` method, or the rename would create a `main` method. |
 | `name-used-by-runtime` | The old or new name of a field or method is one the runtime looks up by name, such as `serialVersionUID`, `readObject`, or `finalize`. |
 | `record-component` | The symbol is a record component, or its field, accessor, or canonical constructor parameter; renaming these is not supported yet. |
 | `annotation-member` | The symbol is an annotation interface element, whose name reflection and the `value` shorthand depend on. |
@@ -40,8 +40,15 @@ A new code is listed in the release notes.
 | `outer-instance-access` | Extract IIFE or Make method static: the code uses a member of an enclosing instance (not `this`), which can't be passed in as the receiver. |
 | `already-static` | Make method static: the method is already static. |
 | `dynamic-dispatch` | Make method static: the method is abstract, an interface method, or overrides or is overridden by another method, so calls to it are dispatched dynamically. |
-| `synchronized-or-native` | Make method static: the method is `synchronized` (it locks its receiver; a static one would lock the class) or `native` (found by name). |
+| `synchronized-or-native` | Make method static or Move static member: the method is `synchronized` (it locks its receiver; a static one would lock the class) or `native` (found by name). |
 | `inner-class-creation` | Make method static: the body creates an inner class instance that needs the receiver as its enclosing instance. |
 | `bound-method-reference` | Make method static: a method reference such as `order::total` binds its receiver when it is created; rewriting it as a lambda would move that evaluation. |
 | `receiver-may-be-null` | Make method static: a call's receiver is not provably non-null (`this`, an object creation, a string literal, or a local initialized with one and never reassigned); a null receiver throws before the body, but the static method would run it. |
+| `not-static` | Move static member: the member is an instance member; use Make method static first. |
+| `target-not-found` | Move static member: the target is not a class declared in the workspace, or is the member's own class. |
+| `target-not-supported` | Move static member: the target is an interface, enum, local or anonymous class, which is not supported yet. |
+| `multiple-declarators` | Move static member: the field is declared together with others (`static int a, b;`). |
+| `static-initialization` | Move static member: the field's initializer, or the source's or target's static initialization, may have observable effects, which would run at a different time. |
+| `receiver-has-effects` | Move static member: the member is used through an expression that may have effects (`make().m()`), which the rewritten reference would no longer evaluate. |
+| `inaccessible` | Move static member: after the move, code would use something it can't access, such as a private member of the source; the tool refuses rather than widening access. |
 | `internal-verification-failed` | The tool's own check of its result failed. This is a bug in the tool; please report it. |

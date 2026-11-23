@@ -1,0 +1,11 @@
+{
+  "options": {
+    "target": "Program.Target"
+  },
+  "refuse": "binding-would-change",
+  "naiveShouldFail": true,
+  "spec": [
+    "Java §15.12.2.5 Choosing the Most Specific Method"
+  ],
+  "notes": "Target.describe(1) would pick the moved describe(int) over describe(long)."
+}

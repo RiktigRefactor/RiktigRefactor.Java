@@ -1,0 +1,9 @@
+{
+  "options": {
+    "target": "Program.Target"
+  },
+  "refuse": "not-static",
+  "spec": [
+    "Java §8.4.3.2 static Methods"
+  ]
+}

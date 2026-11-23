@@ -12,7 +12,7 @@ The specification defines the correctness model, the refactorings, the JSON prot
 
 ## What it can do
 
-The tool has these refactorings: Rename, Extract IIFE, and Make method static.
+The tool has these refactorings: Rename, Extract IIFE, Make method static, and Move static member.
 Both work on a workspace: for now, a directory whose `.java` files are compiled together against the JDK alone.
 The specification's workspace for Java is a Maven or Gradle build, whose dependencies would be on the class path; reading those builds is not implemented yet.
 A workspace that does not compile is refused, because the meaning of its names can't be known.
@@ -85,6 +85,15 @@ Only the specification's `receiver` mode is implemented; `members` mode is not y
 
 It refuses when calls are dispatched dynamically (the method is abstract, an interface method, overrides or is overridden), when a call's receiver may be null (a null receiver would throw before the body, but the static method would run it), for bound method references such as `order::total`, `super` in the body or at a call, `synchronized` or `native` methods, creating an inner class instance that needs the receiver, and when a new overload would change which method another call picks.
 
+### Move static member
+
+Move static member moves a static method or field to another class or record in the workspace, named by its qualified name (`--target shop.Pricing`, or `Program.Pricing` for a nested class), and rewrites every reference to name the target.
+Names in the moved declaration that resolved through the source's scope are qualified with the source (`Pricing.RATE`), nested types are qualified, and the target's file gains imports the declaration needs.
+Single-static-import declarations are updated; other unqualified uses are qualified with the target.
+
+It refuses when using the member would initialize classes at a different time (a field initializer, or the source's or target's static initialization, that may have observable effects), when a reference goes through an expression with effects (`make().rate()`), when something would become inaccessible, for `main`, `synchronized` and `native` methods, fields declared together with others, and when the move would change which member any reference binds to.
+Interfaces and enums as targets are not supported yet.
+
 Each refusal has a code, listed in [refusal-codes.md](refusal-codes.md).
 
 See [limitations](https://github.com/RiktigRefactor/riktigrefactor.spec/blob/main/limitations.md) for what is out of scope, such as reflection, serialization by name, and updating comments and strings.
@@ -117,6 +126,12 @@ Make a method static, with the cursor on its name or a call:
 
 ```shell
 riktig-java make-method-static --workspace . --file src/main/java/shop/Order.java --at 12:17
+```
+
+Move a static member:
+
+```shell
+riktig-java move-static-member --workspace . --file src/main/java/shop/Order.java --at 12:17 --target shop.Pricing
 ```
 
 The exit code is 0 on success, 1 when the refactoring is refused, and 2 on an error such as an unknown file.

@@ -1,0 +1,11 @@
+{
+  "options": {
+    "target": "Target"
+  },
+  "refuse": "inaccessible",
+  "naiveShouldFail": true,
+  "spec": [
+    "Java §6.6.1 Determining Accessibility"
+  ],
+  "notes": "The moved body calls a private method of Source, which Target has no access to; the tool refuses instead of widening access."
+}

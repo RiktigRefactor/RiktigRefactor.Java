@@ -1,0 +1,11 @@
+{
+  "options": {
+    "target": "Program.Target"
+  },
+  "refuse": "receiver-has-effects",
+  "naiveShouldFail": true,
+  "spec": [
+    "Java §15.12.4.1 Compute Target Reference (If Necessary)"
+  ],
+  "notes": "make().rate() evaluates make() and ignores the null; Target.rate() would not call make()."
+}

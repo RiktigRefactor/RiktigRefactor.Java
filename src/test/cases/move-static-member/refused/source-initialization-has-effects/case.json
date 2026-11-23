@@ -1,0 +1,10 @@
+{
+  "options": {
+    "target": "Program.Target"
+  },
+  "refuse": "static-initialization",
+  "naiveShouldFail": true,
+  "spec": [
+    "Java §12.4.1 When Initialization Occurs"
+  ]
+}

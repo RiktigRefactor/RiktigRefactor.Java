@@ -39,6 +39,13 @@ public final class RefusalCodes {
     public static final String INNER_CLASS_CREATION = "inner-class-creation";
     public static final String BOUND_METHOD_REFERENCE = "bound-method-reference";
     public static final String RECEIVER_MAY_BE_NULL = "receiver-may-be-null";
+    public static final String NOT_STATIC = "not-static";
+    public static final String TARGET_NOT_FOUND = "target-not-found";
+    public static final String TARGET_NOT_SUPPORTED = "target-not-supported";
+    public static final String MULTIPLE_DECLARATORS = "multiple-declarators";
+    public static final String STATIC_INITIALIZATION = "static-initialization";
+    public static final String RECEIVER_HAS_EFFECTS = "receiver-has-effects";
+    public static final String INACCESSIBLE = "inaccessible";
     public static final String INTERNAL_VERIFICATION_FAILED = "internal-verification-failed";
 
     private RefusalCodes() {}

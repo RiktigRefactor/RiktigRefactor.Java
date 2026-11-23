@@ -1,0 +1,10 @@
+{
+  "options": {
+    "target": "shop.Rates"
+  },
+  "spec": [
+    "Java §7.5.3 Single-Static-Import Declarations",
+    "Java §7.5.1 Single-Type-Import Declarations"
+  ],
+  "notes": "The body uses List, which the target file gains an import for, and RATE, which is qualified with its class."
+}
