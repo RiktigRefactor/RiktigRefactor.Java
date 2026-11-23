@@ -1,0 +1,25 @@
+root = true
+
+[*]
+indent_style = space
+end_of_line = lf
+charset = utf-8
+trim_trailing_whitespace = true
+insert_final_newline = true
+
+[*.{cmd,bat}]
+end_of_line = crlf
+
+# Extensionless scripts can't be matched by a file-type glob.
+[{build-and-test,tidy-code,mvnw}]
+end_of_line = lf
+
+[*.java]
+indent_size = 4
+
+# Test cases are program text compared byte for byte.
+[src/test/cases/**]
+trim_trailing_whitespace = false
+
+[*.{xml,json,yml,yaml}]
+indent_size = 2
