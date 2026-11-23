@@ -19,6 +19,7 @@ import io.github.riktigrefactor.java.Outcome;
 import io.github.riktigrefactor.java.RefusalCodes;
 import io.github.riktigrefactor.java.analysis.Bindings;
 import io.github.riktigrefactor.java.analysis.Compilation;
+import io.github.riktigrefactor.java.analysis.MemberMove;
 import io.github.riktigrefactor.java.analysis.Occurrences;
 import io.github.riktigrefactor.java.analysis.Prepared;
 import io.github.riktigrefactor.java.analysis.SourceTypes;
@@ -26,10 +27,8 @@ import io.github.riktigrefactor.java.analysis.Support;
 import io.github.riktigrefactor.java.analysis.TextEdit;
 import io.github.riktigrefactor.java.analysis.Verification;
 import java.util.ArrayList;
-import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.ExecutableElement;
@@ -43,8 +42,7 @@ public final class MoveStaticMember {
     private final Compilation compilation;
     private final Support support;
     private final List<TextEdit> edits = new ArrayList<>();
-    private final List<TextEdit> innerEdits = new ArrayList<>();
-    private final Set<String> importsToAdd = new LinkedHashSet<>();
+    private MemberMove mover;
     private Element member;
     private TypeElement source;
     private TypeElement target;
@@ -146,12 +144,13 @@ public final class MoveStaticMember {
                 return checked;
             }
         }
-        rewriteBody(path);
+        mover = new MemberMove(compilation, member, target);
+        mover.qualifySourceScope(path);
         rewriteReferences();
         if (refusal != null && !naive) {
             return refusal;
         }
-        writeMove();
+        mover.moveDeclaration(edits);
         if (naive) {
             return new Outcome.Success(edits, List.of());
         }
@@ -309,45 +308,6 @@ public final class MoveStaticMember {
         return false;
     }
 
-    /** Names in the moved declaration that resolved through the source's scope are qualified with the source. */
-    private void rewriteBody(TreePath path) {
-        String sourceReference = support.typeReference(source, targetFile);
-        new TreePathScanner<Void, Void>() {
-            @Override
-            public Void visitIdentifier(IdentifierTree tree, Void unused) {
-                Element element = compilation.trees.getElement(getCurrentPath());
-                int start = (int) compilation.start(sourceUnit, tree);
-                if (element == null || element.equals(member) || start < 0) {
-                    return null;
-                }
-                if (element instanceof TypeElement type) {
-                    if (type.getNestingKind() == NestingKind.TOP_LEVEL) {
-                        if (!sourceFile.equals(targetFile)
-                                && !Support.packageOf(type).equals("java.lang")
-                                && !Support.packageOf(type).equals(Support.packageOf(target))) {
-                            importsToAdd.add(type.getQualifiedName().toString());
-                        }
-                    } else if (type.getNestingKind() == NestingKind.MEMBER) {
-                        String reference = support.typeReference(type, targetFile);
-                        innerEdits.add(new TextEdit(
-                                sourceFile, start, start + tree.getName().length(), reference));
-                    }
-                    return null;
-                }
-                boolean isStaticMemberOfSourceScope = (element.getKind() == ElementKind.FIELD
-                                || element.getKind() == ElementKind.METHOD)
-                        && Support.isStatic(element)
-                        && element.getEnclosingElement() instanceof TypeElement owner
-                        && compilation.types.isSubtype(
-                                compilation.types.erasure(source.asType()), compilation.types.erasure(owner.asType()));
-                if (isStaticMemberOfSourceScope) {
-                    innerEdits.add(TextEdit.insert(sourceFile, start, sourceReference + "."));
-                }
-                return null;
-            }
-        }.scan(path, null);
-    }
-
     /** Every reference names the target; static imports of the member import it from the target. */
     private void rewriteReferences() {
         for (var entry : compilation.unitsByFile.entrySet()) {
@@ -485,106 +445,10 @@ public final class MoveStaticMember {
     }
 
     private void add(String file, TextEdit edit) {
-        if (file.equals(sourceFile) && declarationStart <= edit.start() && edit.end() <= declarationEnd) {
-            innerEdits.add(edit);
+        if (mover.isInside(file, edit)) {
+            mover.innerEdits.add(edit);
         } else {
             edits.add(edit);
         }
-    }
-
-    /** Deletes the declaration (with its line) and inserts its edited copy at the end of the target's body. */
-    private void writeMove() {
-        String text = compilation.sources.get(sourceFile);
-        int deleteStart = declarationStart;
-        while (deleteStart > 0 && (text.charAt(deleteStart - 1) == ' ' || text.charAt(deleteStart - 1) == '\t')) {
-            deleteStart--;
-        }
-        int deleteEnd = declarationEnd;
-        boolean wholeLine = deleteStart == 0 || text.charAt(deleteStart - 1) == '\n';
-        if (wholeLine) {
-            int lineEnd = deleteEnd;
-            while (lineEnd < text.length() && (text.charAt(lineEnd) == ' ' || text.charAt(lineEnd) == '\t')) {
-                lineEnd++;
-            }
-            if (lineEnd < text.length() && text.charAt(lineEnd) == '\n') {
-                deleteEnd = lineEnd + 1;
-                int afterBlank = deleteEnd;
-                while (afterBlank < text.length()
-                        && (text.charAt(afterBlank) == ' ' || text.charAt(afterBlank) == '\t')) {
-                    afterBlank++;
-                }
-                boolean previousLineBlank = deleteStart >= 1
-                        && text.substring(text.lastIndexOf('\n', deleteStart - 2) + 1, deleteStart - 1)
-                                .isBlank();
-                if (previousLineBlank && afterBlank < text.length() && text.charAt(afterBlank) == '\n') {
-                    deleteEnd = afterBlank + 1;
-                }
-            } else {
-                deleteStart = declarationStart;
-            }
-        } else {
-            deleteStart = declarationStart;
-        }
-        edits.add(new TextEdit(sourceFile, deleteStart, deleteEnd, ""));
-
-        CompilationUnitTree targetUnit = compilation.unitsByFile.get(targetFile);
-        ClassTree targetTree = (ClassTree) compilation.trees.getPath(target).getLeaf();
-        int closingBrace = (int) compilation.end(targetUnit, targetTree) - 1;
-        String targetText = compilation.sources.get(targetFile);
-        int lineStart = targetText.lastIndexOf('\n', closingBrace - 1) + 1;
-        String closingIndent = targetText.substring(lineStart, closingBrace).isBlank()
-                ? targetText.substring(lineStart, closingBrace)
-                : "";
-        String memberIndent = closingIndent + "    ";
-        boolean emptyBody = targetTree.getMembers().stream().allMatch(m -> compilation.end(targetUnit, m) < 0);
-        boolean braceOnOwnLine = targetText.substring(lineStart, closingBrace).isBlank();
-        int insertAt = braceOnOwnLine ? lineStart : closingBrace;
-        String prefix = (emptyBody ? "" : "\n") + memberIndent;
-        String suffix = "\n";
-        if (!braceOnOwnLine) {
-            prefix = " ";
-            suffix = " ";
-        }
-        edits.add(TextEdit.copy(
-                compilation.sources,
-                targetFile,
-                insertAt,
-                insertAt,
-                sourceFile,
-                declarationStart,
-                declarationEnd,
-                prefix,
-                suffix,
-                innerEdits));
-        if (!importsToAdd.isEmpty()) {
-            addImports(targetUnit);
-        }
-    }
-
-    private void addImports(CompilationUnitTree targetUnit) {
-        Set<String> existing = new LinkedHashSet<>();
-        for (ImportTree importTree : targetUnit.getImports()) {
-            existing.add(importTree.getQualifiedIdentifier().toString());
-        }
-        StringBuilder text = new StringBuilder();
-        for (String name : importsToAdd) {
-            if (!existing.contains(name)) {
-                text.append("import ").append(name).append(";\n");
-            }
-        }
-        if (text.isEmpty()) {
-            return;
-        }
-        int at;
-        if (!targetUnit.getImports().isEmpty()) {
-            at = (int) compilation.end(targetUnit, targetUnit.getImports().getLast()) + 1;
-        } else if (targetUnit.getPackage() != null) {
-            at = (int) compilation.end(targetUnit, targetUnit.getPackage()) + 1;
-            text.insert(0, "\n");
-        } else {
-            at = 0;
-            text.append("\n");
-        }
-        edits.add(TextEdit.insert(targetFile, at, text.toString()));
     }
 }
