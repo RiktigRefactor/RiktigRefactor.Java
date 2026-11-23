@@ -18,6 +18,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Pattern;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.DynamicTest;
 import org.junit.jupiter.api.TestFactory;
@@ -65,7 +66,15 @@ class CaseTests {
         };
     }
 
+    private static final Pattern CITATION = Pattern.compile("Java §\\d+(\\.\\d+)* \\S.*");
+
     private static void run(Case testCase) throws IOException {
+        assertFalse(testCase.spec().isEmpty(), "The case cites no section of the Java Language Specification");
+        for (String citation : testCase.spec()) {
+            assertTrue(
+                    CITATION.matcher(citation).matches(),
+                    "Citation not in the form 'Java §<number> <title>': " + citation);
+        }
         String inputFailure = ProgramRunner.failure(testCase.input());
         assertNull(inputFailure, "The input program is a bad test: it " + inputFailure);
 

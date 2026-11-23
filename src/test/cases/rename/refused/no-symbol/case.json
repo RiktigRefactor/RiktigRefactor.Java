@@ -3,5 +3,7 @@
     "newName": "other"
   },
   "refuse": "no-symbol",
-  "spec": []
+  "spec": [
+    "Java §6.2 Names and Identifiers"
+  ]
 }

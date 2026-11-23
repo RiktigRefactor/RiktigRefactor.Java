@@ -18,6 +18,7 @@ record Case(
         Path directory,
         String refactoring,
         JsonNode options,
+        List<String> spec,
         String refuse,
         boolean naiveShouldFail,
         List<String> warnings,
@@ -37,6 +38,8 @@ record Case(
             String refactoring = casesRoot.relativize(directory).getName(0).toString();
             List<String> warnings = new ArrayList<>();
             json.path("warnings").forEach(w -> warnings.add(w.asText()));
+            List<String> spec = new ArrayList<>();
+            json.path("spec").forEach(s -> spec.add(s.asText()));
             Map<String, String> input = readFiles(directory.resolve("input"));
             String markedFile = null;
             int start = -1;
@@ -68,6 +71,7 @@ record Case(
                     directory,
                     refactoring,
                     json.path("options"),
+                    spec,
                     json.path("refuse").asText(null),
                     json.path("naiveShouldFail").asBoolean(false),
                     warnings,
