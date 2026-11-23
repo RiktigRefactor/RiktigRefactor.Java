@@ -1,7 +1,7 @@
 {
   "options": {},
   "spec": [
-    "JLS \u00a715.27 Lambda Expressions",
-    "JLS \u00a715.18.1 String Concatenation Operator +"
+    "Java §15.27 Lambda Expressions",
+    "Java §15.18.1 String Concatenation Operator +"
   ]
 }

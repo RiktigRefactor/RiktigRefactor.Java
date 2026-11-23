@@ -5,7 +5,7 @@
   "refuse": "binding-would-change",
   "naiveShouldFail": true,
   "spec": [
-    "JLS \u00a76.4.1 Shadowing"
+    "Java §6.4.1 Shadowing"
   ],
   "notes": "The reference to field x would be captured by the local y."
 }

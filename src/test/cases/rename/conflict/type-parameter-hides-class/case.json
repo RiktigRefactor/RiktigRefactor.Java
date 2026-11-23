@@ -5,7 +5,7 @@
   "refuse": "would-introduce-errors",
   "naiveShouldFail": true,
   "spec": [
-    "JLS \u00a76.4.1 Shadowing",
-    "JLS \u00a78.1.2 Generic Classes and Type Parameters"
+    "Java §6.4.1 Shadowing",
+    "Java §8.1.2 Generic Classes and Type Parameters"
   ]
 }

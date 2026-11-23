@@ -5,7 +5,7 @@
   "refuse": "invalid-identifier",
   "naiveShouldFail": true,
   "spec": [
-    "JLS \u00a73.8 Identifiers",
-    "JLS \u00a73.9 Keywords"
+    "Java §3.8 Identifiers",
+    "Java §3.9 Keywords"
   ]
 }

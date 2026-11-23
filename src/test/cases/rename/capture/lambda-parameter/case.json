@@ -5,7 +5,7 @@
   "refuse": "binding-would-change",
   "naiveShouldFail": true,
   "spec": [
-    "JLS \u00a76.4.1 Shadowing",
-    "JLS \u00a715.27.1 Lambda Parameters"
+    "Java §6.4.1 Shadowing",
+    "Java §15.27.1 Lambda Parameters"
   ]
 }

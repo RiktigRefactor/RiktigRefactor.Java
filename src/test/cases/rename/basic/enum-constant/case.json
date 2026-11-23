@@ -3,7 +3,7 @@
     "newName": "CRIMSON"
   },
   "spec": [
-    "JLS \u00a78.9.1 Enum Constants",
-    "JLS \u00a714.11 The switch Statement"
+    "Java §8.9.1 Enum Constants",
+    "Java §14.11 The switch Statement"
   ]
 }

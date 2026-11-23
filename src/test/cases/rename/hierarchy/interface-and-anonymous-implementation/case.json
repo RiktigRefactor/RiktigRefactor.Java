@@ -4,7 +4,7 @@
   },
   "naiveShouldFail": true,
   "spec": [
-    "JLS \u00a79.4.1 Inheritance and Overriding",
-    "JLS \u00a715.9.5 Anonymous Class Declarations"
+    "Java §9.4.1 Inheritance and Overriding",
+    "Java §15.9.5 Anonymous Class Declarations"
   ]
 }

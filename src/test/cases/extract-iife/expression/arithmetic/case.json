@@ -1,7 +1,7 @@
 {
   "options": {},
   "spec": [
-    "JLS \u00a715.27 Lambda Expressions",
-    "JLS \u00a715.17 Multiplicative Operators"
+    "Java §15.27 Lambda Expressions",
+    "Java §15.17 Multiplicative Operators"
   ]
 }

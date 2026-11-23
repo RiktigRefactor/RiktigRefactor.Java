@@ -5,6 +5,6 @@
   "refuse": "conflicting-declaration",
   "naiveShouldFail": true,
   "spec": [
-    "JLS \u00a76.4 Shadowing and Obscuring"
+    "Java §6.4 Shadowing and Obscuring"
   ]
 }

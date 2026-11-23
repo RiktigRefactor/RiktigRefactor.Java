@@ -5,7 +5,7 @@
   "refuse": "overriding-would-change",
   "naiveShouldFail": true,
   "spec": [
-    "JLS \u00a78.4.8.1 Overriding (by Instance Methods)"
+    "Java §8.4.8.1 Overriding (by Instance Methods)"
   ],
   "notes": "Every reference still binds to the same declaration, but B.greet would start overriding the renamed method."
 }

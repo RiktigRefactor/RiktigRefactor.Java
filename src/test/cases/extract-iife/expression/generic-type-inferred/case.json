@@ -1,7 +1,7 @@
 {
   "options": {},
   "spec": [
-    "JLS \u00a715.9.3 Choosing the Constructor and its Arguments",
-    "JLS \u00a718.5.2.1 Poly Method Invocation Compatibility"
+    "Java §15.9.3 Choosing the Constructor and its Arguments",
+    "Java §18.5.2.1 Poly Method Invocation Compatibility"
   ]
 }

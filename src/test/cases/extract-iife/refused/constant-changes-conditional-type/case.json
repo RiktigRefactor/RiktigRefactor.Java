@@ -3,8 +3,8 @@
   "refuse": "constant-expression",
   "naiveShouldFail": true,
   "spec": [
-    "JLS \u00a715.25 Conditional Operator ? :",
-    "JLS \u00a715.29 Constant Expressions"
+    "Java §15.25 Conditional Operator ? :",
+    "Java §15.29 Constant Expressions"
   ],
   "notes": "With the constant 0 the conditional has type char; with a method call it would have type int and print 120."
 }

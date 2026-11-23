@@ -3,6 +3,6 @@
     "newName": "describeNumber"
   },
   "spec": [
-    "JLS \u00a715.12.2 Compile-Time Step 2: Determine Method Signature"
+    "Java §15.12.2 Compile-Time Step 2: Determine Method Signature"
   ]
 }

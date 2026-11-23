@@ -3,6 +3,6 @@
   "refuse": "non-local-control-flow",
   "naiveShouldFail": true,
   "spec": [
-    "JLS \u00a714.17 The return Statement"
+    "Java §14.17 The return Statement"
   ]
 }

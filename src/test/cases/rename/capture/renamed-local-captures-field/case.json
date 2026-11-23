@@ -5,7 +5,7 @@
   "refuse": "binding-would-change",
   "naiveShouldFail": true,
   "spec": [
-    "JLS \u00a76.4.1 Shadowing"
+    "Java §6.4.1 Shadowing"
   ],
   "notes": "Renaming the local to count would make it shadow the field that a later reference means."
 }

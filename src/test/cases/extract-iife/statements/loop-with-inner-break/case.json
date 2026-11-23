@@ -1,7 +1,7 @@
 {
   "options": {},
   "spec": [
-    "JLS \u00a714.15 The break Statement"
+    "Java §14.15 The break Statement"
   ],
   "notes": "The break targets a loop inside the selection, so it may move into the lambda."
 }

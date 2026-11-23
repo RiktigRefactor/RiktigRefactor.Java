@@ -3,7 +3,7 @@
   "refuse": "checked-exception",
   "naiveShouldFail": true,
   "spec": [
-    "JLS \u00a711.2.3 Exception Checking",
-    "JLS \u00a715.27.3 Type of a Lambda Expression"
+    "Java §11.2.3 Exception Checking",
+    "Java §15.27.3 Type of a Lambda Expression"
   ]
 }

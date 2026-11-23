@@ -5,6 +5,6 @@
   "refuse": "would-rename-file",
   "naiveShouldFail": true,
   "spec": [
-    "JLS \u00a77.6 Top Level Class and Interface Declarations"
+    "Java §7.6 Top Level Class and Interface Declarations"
   ]
 }

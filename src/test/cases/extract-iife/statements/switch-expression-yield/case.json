@@ -1,7 +1,7 @@
 {
   "options": {},
   "spec": [
-    "JLS \u00a714.21 The yield Statement",
-    "JLS \u00a715.28 switch Expressions"
+    "Java §14.21 The yield Statement",
+    "Java §15.28 switch Expressions"
   ]
 }

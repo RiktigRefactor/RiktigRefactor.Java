@@ -3,6 +3,6 @@
   "refuse": "selection-is-variable",
   "naiveShouldFail": true,
   "spec": [
-    "JLS \u00a715.26 Assignment Operators"
+    "Java §15.26 Assignment Operators"
   ]
 }

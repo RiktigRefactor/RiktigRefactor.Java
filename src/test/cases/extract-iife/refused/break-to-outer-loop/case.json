@@ -3,6 +3,6 @@
   "refuse": "non-local-control-flow",
   "naiveShouldFail": true,
   "spec": [
-    "JLS \u00a714.15 The break Statement"
+    "Java §14.15 The break Statement"
   ]
 }

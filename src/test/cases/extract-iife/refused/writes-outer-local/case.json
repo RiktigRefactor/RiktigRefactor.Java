@@ -3,6 +3,6 @@
   "refuse": "writes-outer-variable",
   "naiveShouldFail": true,
   "spec": [
-    "JLS \u00a715.27.2 Lambda Body"
+    "Java §15.27.2 Lambda Body"
   ]
 }

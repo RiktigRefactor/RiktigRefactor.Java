@@ -197,7 +197,7 @@ public final class ExtractIife {
                 || kind == Tree.Kind.POSTFIX_INCREMENT || kind == Tree.Kind.POSTFIX_DECREMENT;
     }
 
-    /** Conservatively: whether the expression may be a constant expression (JLS §15.29). */
+    /** Conservatively: whether the expression may be a constant expression (Java §15.29). */
     private boolean isConstantExpression(TreePath path) {
         return switch (path.getLeaf()) {
             case LiteralTree literal -> literal.getKind() != Tree.Kind.NULL_LITERAL;
@@ -440,7 +440,7 @@ public final class ExtractIife {
         };
     }
 
-    /** Conservatively (JLS §4.12.4): final, or initialized where declared and never assigned. */
+    /** Conservatively (Java §4.12.4): final, or initialized where declared and never assigned. */
     private boolean isEffectivelyFinal(VariableElement variable) {
         if (variable.getModifiers().contains(Modifier.FINAL)) {
             return true;

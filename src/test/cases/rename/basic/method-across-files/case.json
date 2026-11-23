@@ -3,7 +3,7 @@
     "newName": "welcome"
   },
   "spec": [
-    "JLS \u00a78.4 Method Declarations",
-    "JLS \u00a715.12.1 Compile-Time Step 1: Determine Type to Search"
+    "Java §8.4 Method Declarations",
+    "Java §15.12.1 Compile-Time Step 1: Determine Type to Search"
   ]
 }

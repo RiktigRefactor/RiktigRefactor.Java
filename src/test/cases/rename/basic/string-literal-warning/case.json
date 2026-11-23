@@ -6,7 +6,7 @@
     "string-matches-name"
   ],
   "spec": [
-    "JLS \u00a78.3 Field Declarations"
+    "Java §8.3 Field Declarations"
   ],
   "notes": "A string equal to the old name could be a reflective lookup; the rename warns and leaves it unchanged."
 }

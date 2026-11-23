@@ -5,6 +5,6 @@
   "refuse": "record-component",
   "naiveShouldFail": true,
   "spec": [
-    "JLS \u00a78.10.1 Record Components"
+    "Java §8.10.1 Record Components"
   ]
 }

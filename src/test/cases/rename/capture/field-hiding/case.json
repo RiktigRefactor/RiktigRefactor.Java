@@ -5,6 +5,6 @@
   "refuse": "binding-would-change",
   "naiveShouldFail": true,
   "spec": [
-    "JLS \u00a78.3.1.1 Hiding (by fields)"
+    "Java §8.3.1.1 Hiding (by fields)"
   ]
 }

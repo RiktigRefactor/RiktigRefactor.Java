@@ -1,8 +1,8 @@
 {
   "options": {},
   "spec": [
-    "JLS \u00a715.27.2 Lambda Body",
-    "JLS \u00a715.8.3 this"
+    "Java §15.27.2 Lambda Body",
+    "Java §15.8.3 this"
   ],
   "notes": "A lambda, unlike an anonymous class, keeps the meaning of this."
 }
