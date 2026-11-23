@@ -1,0 +1,11 @@
+{
+  "options": {
+    "newName": "value"
+  },
+  "naiveShouldFail": true,
+  "spec": [
+    "Java §8.4.8.1 Overriding (by Instance Methods)",
+    "Java §15.12.4.5 Create Frame, Synchronize, Transfer Control"
+  ],
+  "notes": "The compiler adds a bridge method to IntBox; renaming both declarations keeps the bridge consistent."
+}

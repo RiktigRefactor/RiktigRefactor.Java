@@ -1,0 +1,8 @@
+{
+  "options": {},
+  "refuse": "constant-expression",
+  "spec": [
+    "Java §15.25 Conditional Operator ? :",
+    "Java §15.29 Constant Expressions"
+  ]
+}

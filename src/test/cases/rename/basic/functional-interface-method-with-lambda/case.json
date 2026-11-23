@@ -1,0 +1,9 @@
+{
+  "options": {
+    "newName": "run"
+  },
+  "spec": [
+    "Java §9.8 Functional Interfaces",
+    "Java §15.13 Method Reference Expressions"
+  ]
+}

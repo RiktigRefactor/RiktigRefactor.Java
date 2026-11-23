@@ -1,0 +1,8 @@
+{
+  "options": {
+    "newName": "timesThree"
+  },
+  "spec": [
+    "Java §15.13 Method Reference Expressions"
+  ]
+}

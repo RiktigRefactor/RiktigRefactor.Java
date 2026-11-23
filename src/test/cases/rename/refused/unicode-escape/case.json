@@ -1,0 +1,9 @@
+{
+  "options": {
+    "newName": "number"
+  },
+  "refuse": "unicode-escape",
+  "spec": [
+    "Java §3.3 Unicode Escapes"
+  ]
+}

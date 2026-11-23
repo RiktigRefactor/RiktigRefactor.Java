@@ -1,0 +1,8 @@
+{
+  "options": {},
+  "refuse": "non-local-control-flow",
+  "naiveShouldFail": true,
+  "spec": [
+    "Java §14.16 The continue Statement"
+  ]
+}

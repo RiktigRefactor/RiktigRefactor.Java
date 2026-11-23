@@ -1,0 +1,9 @@
+{
+  "options": {
+    "newName": "Nested"
+  },
+  "spec": [
+    "Java §7.5.1 Single-Type-Import Declarations",
+    "Java §8.5 Member Class and Interface Declarations"
+  ]
+}

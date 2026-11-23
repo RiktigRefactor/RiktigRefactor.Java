@@ -1,0 +1,11 @@
+{
+  "options": {
+    "newName": "Math"
+  },
+  "refuse": "would-introduce-errors",
+  "naiveShouldFail": true,
+  "spec": [
+    "Java §6.4.2 Obscuring"
+  ],
+  "notes": "A variable named Math obscures the type java.lang.Math, so Math.max would look for a member of the int."
+}

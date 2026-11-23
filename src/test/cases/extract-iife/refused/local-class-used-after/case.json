@@ -1,0 +1,8 @@
+{
+  "options": {},
+  "refuse": "declaration-escapes",
+  "naiveShouldFail": true,
+  "spec": [
+    "Java §14.3 Local Class and Interface Declarations"
+  ]
+}

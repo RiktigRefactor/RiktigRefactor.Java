@@ -1,0 +1,12 @@
+{
+  "options": {
+    "newName": "label"
+  },
+  "refuse": "binding-would-change",
+  "naiveShouldFail": true,
+  "spec": [
+    "Java §6.4.1 Shadowing",
+    "Java §7.5.3 Single-Static-Import Declarations"
+  ],
+  "notes": "A method declared in the class shadows the statically imported one."
+}

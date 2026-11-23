@@ -1,0 +1,11 @@
+{
+  "options": {
+    "newName": "take"
+  },
+  "refuse": "binding-would-change",
+  "naiveShouldFail": true,
+  "spec": [
+    "Java §15.12.2.2 Phase 1: Identify Matching Arity Methods Applicable by Strict Invocation"
+  ],
+  "notes": "After the rename, take(1) prefers widening to long over boxing to Integer."
+}

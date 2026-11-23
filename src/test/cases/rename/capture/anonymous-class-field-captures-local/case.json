@@ -1,0 +1,11 @@
+{
+  "options": {
+    "newName": "y"
+  },
+  "refuse": "binding-would-change",
+  "naiveShouldFail": true,
+  "spec": [
+    "Java §6.4.1 Shadowing",
+    "Java §15.9.5 Anonymous Class Declarations"
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "options": {
+    "newName": "loop"
+  },
+  "refuse": "no-symbol",
+  "spec": [
+    "Java §14.7 Labeled Statements"
+  ],
+  "notes": "Labels are not renamed yet."
+}
