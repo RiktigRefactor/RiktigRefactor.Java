@@ -1,7 +1,5 @@
-package io.github.riktigrefactor.java.rename;
+package io.github.riktigrefactor.java.analysis;
 
-import io.github.riktigrefactor.java.analysis.Compilation;
-import io.github.riktigrefactor.java.analysis.SourceTypes;
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -10,18 +8,18 @@ import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.TypeElement;
 
 /** The methods that must be renamed together because they override one another, directly or through a common subtype. */
-final class Hierarchy {
-    record Result(Set<ExecutableElement> methods, String externalOverridden) {}
+public final class Hierarchy {
+    public record Result(Set<ExecutableElement> methods, String externalOverridden) {}
 
     private final Compilation compilation;
     private final SourceTypes sourceTypes;
 
-    Hierarchy(Compilation compilation) {
+    public Hierarchy(Compilation compilation) {
         this.compilation = compilation;
         this.sourceTypes = new SourceTypes(compilation);
     }
 
-    Result of(ExecutableElement target) {
+    public Result of(ExecutableElement target) {
         List<ExecutableElement> candidates = new ArrayList<>();
         for (TypeElement type : sourceTypes.all) {
             candidates.addAll(SourceTypes.methodsNamed(type, target.getSimpleName()));

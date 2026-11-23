@@ -12,6 +12,7 @@ import io.github.riktigrefactor.java.RefusalCodes;
 import io.github.riktigrefactor.java.Warning;
 import io.github.riktigrefactor.java.analysis.Bindings;
 import io.github.riktigrefactor.java.analysis.Compilation;
+import io.github.riktigrefactor.java.analysis.Hierarchy;
 import io.github.riktigrefactor.java.analysis.NameLocator;
 import io.github.riktigrefactor.java.analysis.Occurrences;
 import io.github.riktigrefactor.java.analysis.Occurrences.Occurrence;
