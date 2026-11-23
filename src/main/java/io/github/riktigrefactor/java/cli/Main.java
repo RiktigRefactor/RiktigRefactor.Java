@@ -6,6 +6,7 @@ import io.github.riktigrefactor.java.analysis.Lexer;
 import io.github.riktigrefactor.java.analysis.TextEdit;
 import io.github.riktigrefactor.java.analysis.Token;
 import io.github.riktigrefactor.java.extractiife.ExtractIife;
+import io.github.riktigrefactor.java.makestatic.MakeMethodStatic;
 import io.github.riktigrefactor.java.protocol.Json;
 import io.github.riktigrefactor.java.protocol.ProtocolResult;
 import io.github.riktigrefactor.java.protocol.ProtocolResult.CommitMessage;
@@ -31,6 +32,7 @@ public final class Main {
             Usage:
               riktig-java rename --workspace DIR --file FILE --at LINE:COLUMN --new-name NAME [--apply] [--json] [--commit-message]
               riktig-java extract-iife --workspace DIR --file FILE --range LINE:COLUMN-LINE:COLUMN [--apply] [--json] [--commit-message]
+              riktig-java make-method-static --workspace DIR --file FILE --at LINE:COLUMN [--receiver-name NAME] [--apply] [--json] [--commit-message]
 
             The workspace is a directory (or a build file in it) whose .java files are compiled together.
             Lines and columns are 1-based; columns count Unicode scalar values. A range's end is exclusive.
@@ -107,6 +109,16 @@ public final class Main {
                         ". r Extract IIFE in " + file,
                         "Behavior-preserving wrap in an immediately-invoked lambda.",
                         "Refactor: extract-iife java " + file + ":" + options.get("--range"));
+            }
+            case "make-method-static" -> {
+                int cursor = offset(text, required(options, "--at"));
+                outcome = MakeMethodStatic.run(workspace.sources(), file, cursor, options.get("--receiver-name"));
+                String name = nameAt(text, cursor);
+                SourceText.Position at = SourceText.position(text, cursor);
+                commit = new CommitMessage(
+                        ". r Make " + name + " static",
+                        "Behavior-preserving change of an instance method to a static method taking its receiver.",
+                        "Refactor: make-method-static java " + file + ":" + at.line() + ":" + at.column());
             }
             default -> throw new UsageException("Unknown command: " + command + "\n" + USAGE);
         }

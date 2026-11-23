@@ -9,7 +9,7 @@ A new code is listed in the release notes.
 |---|---|
 | `input-has-errors` | The workspace does not compile, so the meaning of its names can't be known. |
 | `unicode-escape` | A file contains a Unicode escape (`\uXXXX`), which the tool does not support yet. |
-| `no-symbol` | There is no renameable symbol at the cursor. |
+| `no-symbol` | There is no renameable symbol (or, for the method refactorings, no method) at the cursor. |
 | `not-renameable` | The symbol can't be renamed: it is a package, it is not declared in the workspace, or it is declared implicitly (such as an enum's `values()`). |
 | `invalid-identifier` | The new name is not a valid identifier, or is a keyword or a restricted identifier such as `var` or `record`. |
 | `overrides-external` | The method overrides, or must be renamed together with a method that overrides, a method declared outside the workspace (such as `toString` or `Comparable.compareTo`). |
@@ -35,7 +35,13 @@ A new code is listed in the release notes.
 | `checked-exception` | Extract IIFE: the checked exceptions the selection can throw can't be determined (a generic `throws` clause, or a resource without a `close` method), so the local interface's `throws` clause can't be written. |
 | `writes-lost-on-exception` | Extract IIFE: inside a `try`, the selection assigns a local read afterwards; an exception would lose the assignment, because the lambda returns values only when it completes. |
 | `no-statement-context` | Extract IIFE: the lambda needs a local interface or record, and no statement can hold its declaration (a field initializer, or a body that is a single expression). |
-| `super-access` | Extract IIFE: the selection uses `super`, which a parameter can't stand for. |
-| `qualified-this` | Extract IIFE: the selection uses `Outer.this` or `Outer.super`. |
-| `outer-instance-access` | Extract IIFE: the selection uses a member of an enclosing instance (not `this`), which can't be passed in as the receiver. |
+| `super-access` | Extract IIFE or Make method static: the code uses `super`, which a parameter can't stand for, or a call through `super` would have to become a static call. |
+| `qualified-this` | Extract IIFE or Make method static: the code uses `Outer.this` or `Outer.super`. |
+| `outer-instance-access` | Extract IIFE or Make method static: the code uses a member of an enclosing instance (not `this`), which can't be passed in as the receiver. |
+| `already-static` | Make method static: the method is already static. |
+| `dynamic-dispatch` | Make method static: the method is abstract, an interface method, or overrides or is overridden by another method, so calls to it are dispatched dynamically. |
+| `synchronized-or-native` | Make method static: the method is `synchronized` (it locks its receiver; a static one would lock the class) or `native` (found by name). |
+| `inner-class-creation` | Make method static: the body creates an inner class instance that needs the receiver as its enclosing instance. |
+| `bound-method-reference` | Make method static: a method reference such as `order::total` binds its receiver when it is created; rewriting it as a lambda would move that evaluation. |
+| `receiver-may-be-null` | Make method static: a call's receiver is not provably non-null (`this`, an object creation, a string literal, or a local initialized with one and never reassigned); a null receiver throws before the body, but the static method would run it. |
 | `internal-verification-failed` | The tool's own check of its result failed. This is a bug in the tool; please report it. |

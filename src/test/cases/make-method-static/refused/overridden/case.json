@@ -1,0 +1,8 @@
+{
+  "options": {},
+  "refuse": "dynamic-dispatch",
+  "naiveShouldFail": true,
+  "spec": [
+    "Java §8.4.8.1 Overriding (by Instance Methods)"
+  ]
+}

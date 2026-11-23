@@ -12,7 +12,7 @@ The specification defines the correctness model, the refactorings, the JSON prot
 
 ## What it can do
 
-The tool has two refactorings: Rename and Extract IIFE.
+The tool has these refactorings: Rename, Extract IIFE, and Make method static.
 Both work on a workspace: for now, a directory whose `.java` files are compiled together against the JDK alone.
 The specification's workspace for Java is a Maven or Gradle build, whose dependencies would be on the class path; reading those builds is not implemented yet.
 A workspace that does not compile is refused, because the meaning of its names can't be known.
@@ -64,6 +64,27 @@ It refuses, for example, when:
 
 After wrapping, the tool compiles the result and checks that every name binds as before and every expression keeps its type.
 
+### Make method static
+
+Make method static turns an instance method into a static method of the same class that takes the receiver as its first parameter (named after the class, `order` for `Order`, unless `--receiver-name` says otherwise), and rewrites every call `recv.total(3)` to `Order.total(recv, 3)`:
+
+```java
+// Before
+int total(int qty) { return price * qty; }
+int t = order.total(3);
+
+// After
+static int total(Order order, int qty) { return order.price * qty; }
+int t = Order.total(order, 3);
+```
+
+Uses of the receiver in the body, explicit (`this`) and implicit (fields and calls), including inside lambdas, become uses of the parameter.
+A generic class's type parameters become the method's own.
+Unbound method references (`Order::total`) already take the receiver first and stay as written.
+Only the specification's `receiver` mode is implemented; `members` mode is not yet.
+
+It refuses when calls are dispatched dynamically (the method is abstract, an interface method, overrides or is overridden), when a call's receiver may be null (a null receiver would throw before the body, but the static method would run it), for bound method references such as `order::total`, `super` in the body or at a call, `synchronized` or `native` methods, creating an inner class instance that needs the receiver, and when a new overload would change which method another call picks.
+
 Each refusal has a code, listed in [refusal-codes.md](refusal-codes.md).
 
 See [limitations](https://github.com/RiktigRefactor/riktigrefactor.spec/blob/main/limitations.md) for what is out of scope, such as reflection, serialization by name, and updating comments and strings.
@@ -91,6 +112,12 @@ Positions are 1-based, and columns count Unicode scalar values.
 - `--apply` writes the changes to disk.
 - `--json` prints the result using the shared protocol, without the diff.
 - `--commit-message` prints a suggested commit message in Arlo's Commit Notation.
+
+Make a method static, with the cursor on its name or a call:
+
+```shell
+riktig-java make-method-static --workspace . --file src/main/java/shop/Order.java --at 12:17
+```
 
 The exit code is 0 on success, 1 when the refactoring is refused, and 2 on an error such as an unknown file.
 The MCP server, batch mode, and language server are not implemented yet.

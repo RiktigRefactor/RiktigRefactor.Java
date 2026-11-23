@@ -1,0 +1,7 @@
+{
+  "options": {},
+  "spec": [
+    "Java §15.13.1 Compile-Time Declaration of a Method Reference"
+  ],
+  "notes": "Item::doubled already takes the receiver first, so it stays as written."
+}

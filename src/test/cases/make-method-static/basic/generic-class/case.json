@@ -1,0 +1,8 @@
+{
+  "options": {},
+  "spec": [
+    "Java §8.1.2 Generic Classes and Type Parameters",
+    "Java §18.5.1 Invocation Applicability Inference"
+  ],
+  "notes": "The class type parameter becomes that of the static method, inferred from the receiver argument."
+}

@@ -1,0 +1,8 @@
+{
+  "options": {},
+  "refuse": "super-access",
+  "naiveShouldFail": true,
+  "spec": [
+    "Java §15.11.2 Accessing Superclass Members using super"
+  ]
+}

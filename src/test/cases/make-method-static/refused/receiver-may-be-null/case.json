@@ -1,0 +1,9 @@
+{
+  "options": {},
+  "refuse": "receiver-may-be-null",
+  "naiveShouldFail": true,
+  "spec": [
+    "Java §15.12.4.4 Locate Method to Invoke"
+  ],
+  "notes": "A null receiver throws after the arguments and before the body; the static method would run its body."
+}

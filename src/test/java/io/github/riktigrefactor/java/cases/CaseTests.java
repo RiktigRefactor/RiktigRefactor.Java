@@ -11,6 +11,7 @@ import io.github.riktigrefactor.java.Outcome;
 import io.github.riktigrefactor.java.Warning;
 import io.github.riktigrefactor.java.analysis.TextEdit;
 import io.github.riktigrefactor.java.extractiife.ExtractIife;
+import io.github.riktigrefactor.java.makestatic.MakeMethodStatic;
 import io.github.riktigrefactor.java.rename.Rename;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -70,6 +71,14 @@ class CaseTests {
                                 testCase.markedFile(),
                                 testCase.selectionStart(),
                                 testCase.selectionEnd());
+            case "make-method-static" -> {
+                String receiverName = testCase.options().path("receiverName").asText(null);
+                yield naive
+                        ? MakeMethodStatic.runNaive(
+                                testCase.input(), testCase.markedFile(), testCase.selectionStart(), receiverName)
+                        : MakeMethodStatic.run(
+                                testCase.input(), testCase.markedFile(), testCase.selectionStart(), receiverName);
+            }
             default -> throw new IllegalStateException("Unknown refactoring " + testCase.refactoring());
         };
     }

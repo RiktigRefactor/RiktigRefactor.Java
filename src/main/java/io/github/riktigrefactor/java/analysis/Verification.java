@@ -86,7 +86,7 @@ public final class Verification {
                     continue;
                 }
             }
-            if (now == null || !Objects.equals(expected, now.binding())) {
+            if (now == null || !matches(expected, now.binding())) {
                 return new Verification(
                         edited,
                         editsByFile,
@@ -117,6 +117,24 @@ public final class Verification {
             }
         }
         return new Verification(edited, editsByFile, null);
+    }
+
+    /** An expected binding ending in this matches any type: the element alone is compared. */
+    public static final String ANY_TYPE = " : *";
+
+    private static boolean matches(String expected, String actual) {
+        if (expected.endsWith(ANY_TYPE)) {
+            String element = expected.substring(0, expected.length() - ANY_TYPE.length());
+            int separator = actual.indexOf(" : ");
+            return element.equals(separator < 0 ? actual : actual.substring(0, separator));
+        }
+        return Objects.equals(expected, actual);
+    }
+
+    /** Whether the element part of a binding ("key : type") is {@code key}. */
+    public static boolean elementIs(String binding, String key) {
+        int separator = binding.indexOf(" : ");
+        return (separator < 0 ? binding : binding.substring(0, separator)).equals(key);
     }
 
     /** Replaces the element part of a binding ("key : type") when it is {@code from}. */

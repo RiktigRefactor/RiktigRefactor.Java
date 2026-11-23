@@ -1,0 +1,7 @@
+{
+  "options": {},
+  "refuse": "bound-method-reference",
+  "spec": [
+    "Java §15.13.3 Run-Time Evaluation of Method References"
+  ]
+}

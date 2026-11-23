@@ -33,6 +33,12 @@ public final class RefusalCodes {
     public static final String SUPER_ACCESS = "super-access";
     public static final String QUALIFIED_THIS = "qualified-this";
     public static final String OUTER_INSTANCE_ACCESS = "outer-instance-access";
+    public static final String ALREADY_STATIC = "already-static";
+    public static final String DYNAMIC_DISPATCH = "dynamic-dispatch";
+    public static final String SYNCHRONIZED_OR_NATIVE = "synchronized-or-native";
+    public static final String INNER_CLASS_CREATION = "inner-class-creation";
+    public static final String BOUND_METHOD_REFERENCE = "bound-method-reference";
+    public static final String RECEIVER_MAY_BE_NULL = "receiver-may-be-null";
     public static final String INTERNAL_VERIFICATION_FAILED = "internal-verification-failed";
 
     private RefusalCodes() {}

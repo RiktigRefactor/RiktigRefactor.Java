@@ -1,0 +1,9 @@
+{
+  "options": {},
+  "refuse": "binding-would-change",
+  "naiveShouldFail": true,
+  "spec": [
+    "Java §15.12.2.5 Choosing the Most Specific Method"
+  ],
+  "notes": "The new static total(Order, int) is more specific than total(Object, int), so the existing call would switch to it."
+}
