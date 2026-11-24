@@ -1,0 +1,6 @@
+{
+  "Convention": "InPlaceOverwrite",
+  "ExcludeMarkdownDirectories": [
+    "src/test"
+  ]
+}

@@ -4,7 +4,7 @@ on:
   push:
   pull_request:
   schedule:
-    - cron: '41 4 * * *'
+    - cron: '23 3 * * *'
   workflow_dispatch:
 
 jobs:
@@ -16,9 +16,6 @@ jobs:
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v7
-      - uses: actions/setup-java@v6
-        with:
-          distribution: temurin
-          java-version-file: .java-version
+      - uses: jdx/mise-action@924e7c586e33d7d4bae9c14e26c5d22e2beb6e78 # v5.3.0
       - run: ./build-and-test
         shell: bash

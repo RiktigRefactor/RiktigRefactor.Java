@@ -3,4 +3,6 @@ set -euo pipefail
 
 cd "$(dirname "${BASH_SOURCE[0]}")"
 
-./mvnw --batch-mode --no-transfer-progress spotless:apply
+mise exec -- ./mvnw --batch-mode --no-transfer-progress spotless:apply
+
+mise run mdsnippets

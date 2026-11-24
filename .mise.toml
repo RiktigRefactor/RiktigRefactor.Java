@@ -1,0 +1,13 @@
+[tools]
+dotnet = "latest"
+java = "temurin-21"
+
+[tasks.mdsnippets]
+description = "Update snippets and the table of contents in markdown files"
+run = ["dotnet tool restore", "dotnet mdsnippets"]
+
+[tasks.build-and-test]
+description = "Build and run all tests"
+run = [
+  "bash ./mvnw --batch-mode --no-transfer-progress verify",
+]
