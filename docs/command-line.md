@@ -38,7 +38,7 @@ riktig-java move-static-member --workspace . --file src/main/java/shop/Order.jav
 Move a static method to an instance method of its `order` parameter's class:
 
 ```shell
-riktig-java move-to-instance-method --workspace . --file src/main/java/shop/Pricing.java --at 12:17 --receiver order
+riktig-java convert-to-instance-method --workspace . --file src/main/java/shop/Pricing.java --at 12:17 --receiver order
 ```
 
 The exit code is 0 on success, 1 when the refactoring is refused, and 2 on an error such as an unknown file.

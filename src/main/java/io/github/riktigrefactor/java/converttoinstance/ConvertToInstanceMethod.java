@@ -1,4 +1,4 @@
-package io.github.riktigrefactor.java.movetoinstance;
+package io.github.riktigrefactor.java.converttoinstance;
 
 import com.sun.source.tree.ClassTree;
 import com.sun.source.tree.CompilationUnitTree;
@@ -42,7 +42,7 @@ import javax.lang.model.type.TypeMirror;
  * Turns a static method into an instance method of the class of one of its parameters: the parameter becomes the
  * receiver, and every call {@code S.m(a, recv)} becomes {@code recv.m(a)}.
  */
-public final class MoveToInstanceMethod {
+public final class ConvertToInstanceMethod {
     private final Compilation compilation;
     private final Support support;
     private final List<TextEdit> edits = new ArrayList<>();
@@ -53,7 +53,7 @@ public final class MoveToInstanceMethod {
     private MemberMove mover;
     private Outcome refusal;
 
-    private MoveToInstanceMethod(Compilation compilation) {
+    private ConvertToInstanceMethod(Compilation compilation) {
         this.compilation = compilation;
         this.support = new Support(compilation);
     }
@@ -73,7 +73,7 @@ public final class MoveToInstanceMethod {
         if (prepared.refusal() != null) {
             return prepared.refusal();
         }
-        return new MoveToInstanceMethod(prepared.compilation()).move(file, cursor, receiverName, naive);
+        return new ConvertToInstanceMethod(prepared.compilation()).move(file, cursor, receiverName, naive);
     }
 
     private void refuse(String code, String message, String file, long start, long end, String suggestion) {

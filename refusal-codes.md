@@ -18,7 +18,7 @@ A new code is listed in the release notes.
 | `record-component` | The symbol is a record component, or its field, accessor, or canonical constructor parameter; renaming these is not supported yet. |
 | `annotation-member` | The symbol is an annotation interface element, whose name reflection and the `value` shorthand depend on. |
 | `would-rename-file` | The symbol is a public top-level type, so its file would have to be renamed, which is not supported yet. |
-| `static-import-shared` | Rename, or Move static method to instance method (which refuses any static import of the method): a single-static-import declaration names the symbol and other static members of the same name that are not renamed. |
+| `static-import-shared` | Rename, or Convert static method to instance method (which refuses any static import of the method): a single-static-import declaration names the symbol and other static members of the same name that are not renamed. |
 | `conflicting-declaration` | The new name collides with an existing declaration in the same scope. |
 | `would-introduce-errors` | The result would not compile, for a reason other than a conflicting declaration. |
 | `binding-would-change` | After the change, a name would refer to a different declaration than before, such as when a reference is captured by a local, a lambda parameter, an inherited member, or a different overload. |
@@ -43,19 +43,19 @@ A new code is listed in the release notes.
 | `synchronized-or-native` | Make method static or Move static member: the method is `synchronized` (it locks its receiver; a static one would lock the class) or `native` (found by name). |
 | `inner-class-creation` | Make method static: the body creates an inner class instance that needs the receiver as its enclosing instance. |
 | `bound-method-reference` | Make method static: a method reference such as `order::total` binds its receiver when it is created; rewriting it as a lambda would move that evaluation. |
-| `receiver-may-be-null` | Make method static, or Move static method to instance method: a call's receiver is not provably non-null (`this`, an object creation, a string literal, or a local initialized with one and never reassigned); a null receiver throws before the body, but the static method would run it. |
-| `not-static` | Move static member, or Move static method to instance method: the member is an instance member; use Make method static first. |
+| `receiver-may-be-null` | Make method static, or Convert static method to instance method: a call's receiver is not provably non-null (`this`, an object creation, a string literal, or a local initialized with one and never reassigned); a null receiver throws before the body, but the static method would run it. |
+| `not-static` | Move static member, or Convert static method to instance method: the member is an instance member; use Make method static first. |
 | `target-not-found` | Move static member: the target is not a class declared in the workspace, or is the member's own class. |
-| `target-not-supported` | Move static member, or Move static method to instance method (the receiver's type must be a class or record in the workspace): the target is an interface, enum, local or anonymous class, which is not supported yet. |
+| `target-not-supported` | Move static member, or Convert static method to instance method (the receiver's type must be a class or record in the workspace): the target is an interface, enum, local or anonymous class, which is not supported yet. |
 | `multiple-declarators` | Move static member: the field is declared together with others (`static int a, b;`). |
 | `static-initialization` | Move static member: the field's initializer, or the source's or target's static initialization, may have observable effects, which would run at a different time. |
-| `receiver-has-effects` | Move static member, or Move static method to instance method: the member is used through an expression that may have effects (`make().m()`), which the rewritten reference would no longer evaluate. |
+| `receiver-has-effects` | Move static member, or Convert static method to instance method: the member is used through an expression that may have effects (`make().m()`), which the rewritten reference would no longer evaluate. |
 | `inaccessible` | Move static member: after the move, code would use something it can't access, such as a private member of the source; the tool refuses rather than widening access. |
-| `type-parameters` | Move static method to instance method: generic methods, and generic target classes, are not supported yet. |
-| `invalid-receiver` | Move static method to instance method: the receiver parameter is varargs or assigned in the body, or a call's receiver argument needs a conversion other than reference widening. |
-| `name-in-hierarchy` | Move static method to instance method: the receiver's class, a supertype or a subtype already declares a method with that name (the new method would overload, override or be overridden), or the name is one of `Object`'s methods. |
-| `receiver-in-nested-class` | Move static method to instance method: the receiver parameter is used inside a nested class, where `this` would mean that class. |
-| `method-reference-shape` | Move static method to instance method: a method reference to the method can't become an unbound reference, because the receiver isn't the first parameter. |
-| `evaluation-order` | Move static method to instance method: an argument written before the receiver may depend on it, and the receiver would be evaluated first. |
-| `recursive-call-receiver` | Move static method to instance method: a recursive call passes a receiver other than the receiver parameter itself, which is not supported yet. |
+| `type-parameters` | Convert static method to instance method: generic methods, and generic target classes, are not supported yet. |
+| `invalid-receiver` | Convert static method to instance method: the receiver parameter is varargs or assigned in the body, or a call's receiver argument needs a conversion other than reference widening. |
+| `name-in-hierarchy` | Convert static method to instance method: the receiver's class, a supertype or a subtype already declares a method with that name (the new method would overload, override or be overridden), or the name is one of `Object`'s methods. |
+| `receiver-in-nested-class` | Convert static method to instance method: the receiver parameter is used inside a nested class, where `this` would mean that class. |
+| `method-reference-shape` | Convert static method to instance method: a method reference to the method can't become an unbound reference, because the receiver isn't the first parameter. |
+| `evaluation-order` | Convert static method to instance method: an argument written before the receiver may depend on it, and the receiver would be evaluated first. |
+| `recursive-call-receiver` | Convert static method to instance method: a recursive call passes a receiver other than the receiver parameter itself, which is not supported yet. |
 | `internal-verification-failed` | The tool's own check of its result failed. This is a bug in the tool; please report it. |

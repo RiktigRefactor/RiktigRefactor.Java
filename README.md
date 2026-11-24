@@ -17,7 +17,7 @@ This is the Java implementation of the [RiktigRefactor specification](https://gi
     * [Extract IIFE](#extract-iife)
     * [Make method static](#make-method-static)
     * [Move static member](#move-static-member)
-    * [Move static method to instance method](#move-static-method-to-instance-method)
+    * [Convert static method to instance method](#convert-static-method-to-instance-method)
   * [Using it](#using-it)
   * [Java version](#java-version)
   * [Building and testing](#building-and-testing)<!-- endToc -->
@@ -192,14 +192,14 @@ int use(Order order) {
 
 See more details in [docs/move-static-member.md](docs/move-static-member.md).
 
-### Move static method to instance method
+### Convert static method to instance method
 
-Move static method to instance method is the inverse of Make method static: a parameter of a static method becomes the receiver.
+Convert static method to instance method is the inverse of Make method static: a parameter of a static method becomes the receiver.
 
 #### Before
 
-<!-- snippet: move-to-instance-method-before -->
-<a id='snippet-move-to-instance-method-before'></a>
+<!-- snippet: convert-to-instance-method-before -->
+<a id='snippet-convert-to-instance-method-before'></a>
 ```java
 class Order {
     int price;
@@ -216,13 +216,13 @@ int use(Order order) {
     return t;
 }
 ```
-<sup><a href='/src/test/java/io/github/riktigrefactor/java/docs/ReadmeExamples.java#L131-L147' title='Snippet source file'>snippet source</a> | <a href='#snippet-move-to-instance-method-before' title='Start of snippet'>anchor</a></sup>
+<sup><a href='/src/test/java/io/github/riktigrefactor/java/docs/ReadmeExamples.java#L131-L147' title='Snippet source file'>snippet source</a> | <a href='#snippet-convert-to-instance-method-before' title='Start of snippet'>anchor</a></sup>
 <!-- endSnippet -->
 
 #### After
 
-<!-- snippet: move-to-instance-method-after -->
-<a id='snippet-move-to-instance-method-after'></a>
+<!-- snippet: convert-to-instance-method-after -->
+<a id='snippet-convert-to-instance-method-after'></a>
 ```java
 class Order {
     int price;
@@ -239,10 +239,10 @@ int use(Order order) {
     return t;
 }
 ```
-<sup><a href='/src/test/java/io/github/riktigrefactor/java/docs/ReadmeExamples.java#L151-L167' title='Snippet source file'>snippet source</a> | <a href='#snippet-move-to-instance-method-after' title='Start of snippet'>anchor</a></sup>
+<sup><a href='/src/test/java/io/github/riktigrefactor/java/docs/ReadmeExamples.java#L151-L167' title='Snippet source file'>snippet source</a> | <a href='#snippet-convert-to-instance-method-after' title='Start of snippet'>anchor</a></sup>
 <!-- endSnippet -->
 
-See more details in [docs/move-static-method-to-instance-method.md](docs/move-static-method-to-instance-method.md).
+See more details in [docs/convert-static-method-to-instance-method.md](docs/convert-static-method-to-instance-method.md).
 
 ## Using it
 

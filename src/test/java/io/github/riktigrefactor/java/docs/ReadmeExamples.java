@@ -127,8 +127,8 @@ final class ReadmeExamples {
         // end-snippet
     }
 
-    static final class MoveToInstanceMethodBefore {
-        // begin-snippet: move-to-instance-method-before
+    static final class ConvertToInstanceMethodBefore {
+        // begin-snippet: convert-to-instance-method-before
         class Order {
             int price;
         }
@@ -147,8 +147,8 @@ final class ReadmeExamples {
         // end-snippet
     }
 
-    static final class MoveToInstanceMethodAfter {
-        // begin-snippet: move-to-instance-method-after
+    static final class ConvertToInstanceMethodAfter {
+        // begin-snippet: convert-to-instance-method-after
         class Order {
             int price;
 

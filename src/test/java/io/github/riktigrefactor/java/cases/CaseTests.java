@@ -13,7 +13,7 @@ import io.github.riktigrefactor.java.analysis.TextEdit;
 import io.github.riktigrefactor.java.extractiife.ExtractIife;
 import io.github.riktigrefactor.java.makestatic.MakeMethodStatic;
 import io.github.riktigrefactor.java.movestatic.MoveStaticMember;
-import io.github.riktigrefactor.java.movetoinstance.MoveToInstanceMethod;
+import io.github.riktigrefactor.java.converttoinstance.ConvertToInstanceMethod;
 import io.github.riktigrefactor.java.rename.Rename;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -89,12 +89,12 @@ class CaseTests {
                         : MoveStaticMember.run(
                                 testCase.input(), testCase.markedFile(), testCase.selectionStart(), target);
             }
-            case "move-to-instance-method" -> {
+            case "convert-to-instance-method" -> {
                 String receiver = testCase.options().path("receiver").asText();
                 yield naive
-                        ? MoveToInstanceMethod.runNaive(
+                        ? ConvertToInstanceMethod.runNaive(
                                 testCase.input(), testCase.markedFile(), testCase.selectionStart(), receiver)
-                        : MoveToInstanceMethod.run(
+                        : ConvertToInstanceMethod.run(
                                 testCase.input(), testCase.markedFile(), testCase.selectionStart(), receiver);
             }
             default -> throw new IllegalStateException("Unknown refactoring " + testCase.refactoring());

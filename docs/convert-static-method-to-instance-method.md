@@ -1,4 +1,4 @@
-# Move static method to instance method
+# Convert static method to instance method
 
 The inverse of Make method static: a static method becomes an instance method of the class of the parameter named by `--receiver`, which becomes `this`, and every call `Pricing.total(order, 3)` becomes `order.total(3)`.
 The method moves to the end of that class; names that resolved through the old class's scope are qualified, and it is `final` when the class has subclasses.
