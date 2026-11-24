@@ -46,7 +46,7 @@ The MCP server, batch mode, and language server are not implemented yet.
 
 ## Java version
 
-The tool targets Java 21, the newest JDK available where it is developed, and analyzes code as the running JDK's compiler does.
+The tool targets Java 25, the newest JDK available where it is developed, and analyzes code as the running JDK's compiler does.
 The specification asks for the latest stable language version; moving to it is planned.
 
 A workspace is, for now, a directory whose `.java` files are compiled together against the JDK alone.

@@ -254,7 +254,7 @@ See [the command line](docs/command-line.md) for the options, exit codes and ref
 
 ## Java version
 
-The tool targets Java 21, the newest JDK available where it is developed, and analyzes code as the running JDK's compiler does.
+The tool targets Java 25, the newest JDK available where it is developed, and analyzes code as the running JDK's compiler does.
 The specification asks for the latest stable language version; moving to it is planned.
 
 ## Building and testing
