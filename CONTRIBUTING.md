@@ -1,5 +1,20 @@
 # Contributing
 
+## Building and testing
+
+Run `./build-and-test` on Linux or macOS, or `build-and-test.cmd` on Windows (it needs Git for Windows).
+It needs a JDK 21 or newer; the Maven wrapper downloads Maven itself.
+It checks formatting (palantir-java-format, through Spotless) and runs every test.
+Run `./tidy-code` to format the code.
+
+Test cases live in `src/test/cases`, in the [format defined by the specification](https://github.com/RiktigRefactor/riktigrefactor.spec/blob/main/test-format.md), with a `case.json` per case.
+Every input and expected program is compiled and run, and edge cases must fail under a deliberately naive implementation.
+
+## Citing the Java specification
+
+Every test case lists the language-specification sections it covers in its `spec` field, written as `Java §<number> <title>`, for example `Java §6.4.1 Shadowing`.
+The numbers and titles follow [The Java Language Specification, Java SE 21 Edition](https://docs.oracle.com/javase/specs/jls/se21/html/index.html).
+
 ## Commit messages
 
 Commits use [Arlo's Commit Notation](https://github.com/RefactoringCombos/ArlosCommitNotation).

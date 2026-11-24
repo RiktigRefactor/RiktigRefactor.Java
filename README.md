@@ -156,21 +156,10 @@ The MCP server, batch mode, and language server are not implemented yet.
 The tool targets Java 21, the newest JDK available where it is developed, and analyzes code as the running JDK's compiler does.
 The specification asks for the latest stable language version; moving to it is planned.
 
-## Build and test
+## Building and testing
 
-Run `./build-and-test` on Linux or macOS, or `build-and-test.cmd` on Windows (it needs Git for Windows).
-It needs a JDK 21 or newer; the Maven wrapper downloads Maven itself.
-It checks formatting (palantir-java-format, through Spotless) and runs every test.
-Run `./tidy-code` to format the code.
+```shell
+./build-and-test
+```
 
-Test cases live in `src/test/cases`, in the [format defined by the specification](https://github.com/RiktigRefactor/riktigrefactor.spec/blob/main/test-format.md), with a `case.json` per case.
-Every input and expected program is compiled and run, and edge cases must fail under a deliberately naive implementation.
-
-### Citing the Java specification
-
-Every test case lists the language-specification sections it covers in its `spec` field, written as `Java §<number> <title>`, for example `Java §6.4.1 Shadowing`.
-The numbers and titles follow [The Java Language Specification, Java SE 21 Edition](https://docs.oracle.com/javase/specs/jls/se21/html/index.html).
-
-## Contributing
-
-See [CONTRIBUTING.md](CONTRIBUTING.md) for the commit message convention.
+For more information, see [CONTRIBUTING.md](CONTRIBUTING.md).
