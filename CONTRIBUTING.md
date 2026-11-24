@@ -3,7 +3,7 @@
 ## Building and testing
 
 Run `./build-and-test` on Linux or macOS, or `build-and-test.cmd` on Windows (it needs Git for Windows).
-It needs a JDK 21 or newer; the Maven wrapper downloads Maven itself.
+It needs [Mise](https://mise.jdx.dev/), which installs JDK 25; the Maven wrapper downloads Maven itself.
 It checks formatting (palantir-java-format, through Spotless) and runs every test.
 Run `./tidy-code` to format the code.
 
@@ -13,7 +13,7 @@ Every input and expected program is compiled and run, and edge cases must fail u
 ## Citing the Java specification
 
 Every test case lists the language-specification sections it covers in its `spec` field, written as `Java §<number> <title>`, for example `Java §6.4.1 Shadowing`.
-The numbers and titles follow [The Java Language Specification, Java SE 21 Edition](https://docs.oracle.com/javase/specs/jls/se21/html/index.html).
+The numbers and titles follow [The Java Language Specification, Java SE 25 Edition](https://docs.oracle.com/javase/specs/jls/se25/html/index.html).
 
 ## Commit messages
 

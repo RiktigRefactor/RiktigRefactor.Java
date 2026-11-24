@@ -3,4 +3,10 @@ set -euo pipefail
 
 cd "$(dirname "${BASH_SOURCE[0]}")"
 
-./mvnw --batch-mode --no-transfer-progress spotless:apply
+if ! command -v mise >/dev/null 2>&1; then
+    echo "[error] 'mise' is required but not found on PATH. Install Mise: https://mise.jdx.dev/"
+    exit 127
+fi
+
+mise --quiet install
+mise task run tidy-code -- "$@"
