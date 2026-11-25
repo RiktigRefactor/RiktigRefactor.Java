@@ -4,8 +4,8 @@
 
 Run `./build-and-test` on Linux or macOS, or `build-and-test.cmd` on Windows (it needs Git for Windows).
 It needs [Mise](https://mise.jdx.dev/), which installs JDK 25; the Maven wrapper downloads Maven itself.
-It checks formatting (palantir-java-format, through Spotless) and runs every test.
-Run `./tidy-code` to format the code.
+It compiles and runs every test; it does not check formatting.
+Run `./tidy-code` to format the code (palantir-java-format, through Spotless).
 
 Test cases live in `src/test/cases`, in the [format defined by the specification](https://github.com/RiktigRefactor/riktigrefactor.spec/blob/main/test-format.md), with a `case.json` per case.
 Every input and expected program is compiled and run, and edge cases must fail under a deliberately naive implementation.
