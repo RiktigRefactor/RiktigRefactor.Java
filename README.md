@@ -246,6 +246,10 @@ See more details in [docs/convert-static-method-to-instance-method.md](docs/conv
 
 ## Using it
 
+This is an early preview.
+Download the jar from the [releases page](https://github.com/RiktigRefactor/RiktigRefactor.Java/releases) and run it with Java 25, as `java -jar riktigrefactor-java-VERSION.jar`; the example below calls that `riktig-java`.
+It does not read Maven or Gradle builds yet, so code that depends on libraries is refused.
+
 ```shell
 riktig-java rename --workspace . --file src/main/java/shop/Order.java --at 12:17 --new-name total
 ```

@@ -2,8 +2,10 @@
 
 Each refusal has a code, listed in [refusal-codes.md](../refusal-codes.md).
 
-The tool is not published yet.
-Build it with `./mvnw package -DskipTests`, then run `java -jar target/riktigrefactor-java-0.1.0-SNAPSHOT.jar`; the examples below call that `riktig-java`.
+The tool needs Java 25.
+Download the jar from the [releases page](https://github.com/RiktigRefactor/RiktigRefactor.Java/releases); until version 1.0, expect preview releases.
+Run it with `java -jar riktigrefactor-java-VERSION.jar`; the examples below call that `riktig-java`.
+To build it from source instead, run `./mvnw package -DskipTests`, which puts the jar in `target/`.
 
 Preview a rename as a diff:
 
@@ -42,7 +44,7 @@ riktig-java convert-to-instance-method --workspace . --file src/main/java/shop/P
 ```
 
 The exit code is 0 on success, 1 when the refactoring is refused, and 2 on an error such as an unknown file.
-The MCP server, batch mode, and language server are not implemented yet.
+The MCP server, batch mode, language server, and the specification's Extract object from arguments refactoring are not implemented yet.
 
 ## Java version
 
