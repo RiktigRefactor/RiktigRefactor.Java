@@ -1,0 +1,61 @@
+name: Prerelease
+
+# Every push to main publishes a prerelease: a GitHub prerelease with the executable jar,
+# and a -SNAPSHOT-style prerelease version on GitHub Packages.
+on:
+  push:
+    branches: [main]
+
+concurrency:
+  group: prerelease
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+  packages: write
+
+jobs:
+  build-and-test:
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v7
+      - uses: jdx/mise-action@924e7c586e33d7d4bae9c14e26c5d22e2beb6e78 # v5.3.0
+      - run: ./build-and-test
+        shell: bash
+
+  prerelease:
+    needs: build-and-test
+    runs-on: ubuntu-latest
+    env:
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    steps:
+      - uses: actions/checkout@v7
+      - uses: jdx/mise-action@924e7c586e33d7d4bae9c14e26c5d22e2beb6e78 # v5.3.0
+      - name: Write GitHub Packages credentials
+        run: |
+          mkdir -p ~/.m2
+          cat > ~/.m2/settings.xml <<'XML'
+          <settings><servers><server><id>github</id>
+            <username>${env.GITHUB_ACTOR}</username><password>${env.GITHUB_TOKEN}</password>
+          </server></servers></settings>
+          XML
+      - name: Compute version
+        id: v
+        run: |
+          base=$(sed -n 's|^  <version>\(.*\)-SNAPSHOT</version>|\1|p' pom.xml | head -1)
+          echo "version=$base-preview.${{ github.run_number }}" >> "$GITHUB_OUTPUT"
+      - name: Set version
+        run: sed -i '0,/^  <version>.*<\/version>/s||  <version>${{ steps.v.outputs.version }}</version>|' pom.xml
+      - run: ./mvnw -B -DskipTests package
+      - name: Deploy to GitHub Packages
+        run: ./mvnw -B -DskipTests deploy
+      - name: GitHub prerelease
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          v=${{ steps.v.outputs.version }}
+          gh release create "v$v" --prerelease --target "$GITHUB_SHA" --generate-notes \
+            --title "v$v" target/riktigrefactor-java-$v.jar

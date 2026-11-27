@@ -11,6 +11,17 @@
   <description>Behavior-preserving refactorings for Java.</description>
   <url>https://github.com/RiktigRefactor/RiktigRefactor.Java</url>
 
+  <scm>
+    <url>https://github.com/RiktigRefactor/RiktigRefactor.Java</url>
+  </scm>
+
+  <distributionManagement>
+    <repository>
+      <id>github</id>
+      <url>https://maven.pkg.github.com/RiktigRefactor/RiktigRefactor.Java</url>
+    </repository>
+  </distributionManagement>
+
   <licenses>
     <license>
       <name>MIT</name>
